@@ -1,0 +1,141 @@
+% \documentclass[../main.tex]{subfiles}
+
+% \begin{document}
+	
+\section{Basic statements}
+Now that we have the initial definitions out of the way, we can start with some basic properties of streams and transducers.
+
+\begin{proposition}{Basic inequalities.}\label{basic_ineq}\\
+	For any stream $\sigma\in\streams$ we have:
+	\begin{enumerate}
+		\item $\sigma \geq \0$. \label{basic_ineq.all_zero}
+		\item $\sigma \geq \sigma$. \label{basic_ineq.reflexivity}
+		\item $\sigma \geq \shift{k}{\sigma}$ for any $k\geq 0$. \label{basic_ineq.shift}
+		\item $\sigma \geq w\cdot\sigma$ for any $w\in\2$. \label{basic_ineq.prepend}
+	\end{enumerate}
+	\begin{proof}\hfill
+		\begin{enumerate}
+			\item The proof is given by a single FST that will transduce any stream $\sigma \in \streams$ to $\0$. Recall that $\0 = \prod_{i=0}^{\infty}\s{0}= \s{0}^{\omega}$. 
+			Let $T := (\{q\}, q, \delta, \lambda)$ be a FST where 
+			\begin{align*}
+				\delta(q,\s{0}):=q & \qquad\lambda(q,\s{0}) := \s{0} \\
+				\qquad\delta(q,\s{1}):=q & \qquad\lambda(q,1):= \s{0}
+			\end{align*}
+			This transducer is shown in \cref{fig:basic_ineq.all_zero.trans}.
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}
+					\node[state,initial] (q) {$q$};
+					\draw (q) edge[loop above] node[above]{\lb{0}{\s{0}}} (q);
+					\draw (q) edge[loop right] node[right,xshift=5]{\lb{1}{\s{0}}} (q);
+				\end{tikzpicture}
+				\caption{A FST that transduces any stream to $\0$.}
+				\label{fig:basic_ineq.all_zero.trans}
+			\end{figure}
+			It is trivial that this transducer gives the required result.
+
+			\item We can create a FST that copies the input stream. Define the FST $T := (\{q\},q,\delta,\lambda)$ where 
+			\begin{align*}
+				\delta(q,\s{0}) &:= q &\lambda(q,\s{0}) &= \s{0} \\
+				\delta(q,\s{1}) &:= q &\lambda(q,\s{1}) &= \s{1}
+			\end{align*}
+			This transducer is shown in \cref{fig:basic_ineq.trans}. It is clear that this transducer provides us with the required result.
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}
+					\node[state,initial] (q) at (0,0) {$q$};
+					\draw (q) edge[loop right,looseness=15] node[right,xshift=2,yshift=-5]{\lb{1}{\s{1}}} node[right,xshift=2,yshift=5]{\lb{0}{\s{0}}} (q);
+				\end{tikzpicture}
+				\caption{A transducer that copies the input stream.}
+				\label{fig:basic_ineq.trans}
+			\end{figure}
+
+			\item Let $T := (Q,q_0,\delta,\lambda)$ be a FST where $Q := \{q_0,q_1,...,q_{k-1},q_{k}\}$ and 
+			\begin{align*}
+				\delta(q_i,\s{0}) &:= q_{i+1} &\lambda(q_i,\s{0}) &:= \epsilon &\text{ for all } i<k\\
+				\delta(q_i,\s{1}) &:= q_{i+1} &\lambda(q_i,\s{1}) &:= \epsilon &\text{ for all } i<k\\
+				\delta(q_k,\s{1}) &:= q_k \qquad&\lambda(q_k,\s{1}) &:= \s{1}\\
+				\delta(q_k,\s{0}) &:= q_k \qquad&\lambda(q_k,\s{0}) &:= \s{0}
+			\end{align*}
+			This transducer is shown in \cref{fig:basic_ineq.shift}.
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}
+					\node[state,initial] (q_0) {$q_0$};
+					\node[state,right of=q_0] (q_1) {$q_1$};
+					\draw (q_0) edge node[above]{\lb{1}{\epsilon}} node[above,yshift=12]{\lb{0}{\epsilon}} (q_1);
+					\node[state,right of=q_1] (q_{k-1}) {$q_{k-1}$};
+					\draw[curvy] (q_1) -- (q_{k-1});
+					\node[state,right of=q_{k-1}] (q_k) {$q_k$};
+					\draw (q_{k-1}) edge node[above]{\lb{1}{\epsilon}} node[above,yshift=12]{\lb{0}{\epsilon}} (q_k);
+					\draw (q_k) edge[loop right,looseness=12] node[right,xshift=2,yshift=-7]{\lb{1}{\s{1}}} node[right,xshift=2,yshift=6]{\lb{0}{\s{0}}} (q_k);
+				\end{tikzpicture}
+				\caption{A transducer that shifts a stream by $k$ symbols.}
+				\label{fig:basic_ineq.shift}
+			\end{figure}
+			This transducer skips the first $k$ symbols and then starts copying the stream. 
+			\item Let $w\in\2$ be a word and $\sigma\in\streams$ a stream. We will show that $\sigma \geq_{T} w\cdot\sigma$ by the FST $T := (\{q_0,q_1\},q_0,\delta,\lambda)$ where
+			\begin{align*}
+				\delta(q_0, \s{0}) &:= q_1 & \lambda(q_0, \s{0}) &:= w \cdot \s{0} \\
+				\delta(q_0, \s{1}) &:= q_1 & \lambda(q_0, \s{1}) &:= w \cdot \s{1} \\
+				\delta(q_1, \s{0}) &:= q_1 & \lambda(q_1, \s{0}) &:= \s{0} \\
+				\delta(q_1, \s{1}) &:= q_1 & \lambda(q_1, \s{1}) &:= \s{1}
+			\end{align*}
+			The FST $T$ is shown in \cref{fig:basic_ineq.prepend}.
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}
+					\node[state,initial] (q_0) {$q_0$};
+					\node[state,right of=q_0] (q_1) {$q_1$};
+					\draw (q_0) edge[bend left] node[above] {\lb{1}{w \cdot 1}} (q_1);
+					\draw (q_0) edge[bend right] node[below] {\lb{0}{w \cdot 0}} (q_1);
+					\draw (q_1) edge[loop right,looseness=15] node[right,xshift=2,yshift=-5]{\lb{1}{1}} node[right,xshift=2,yshift=5]{\lb{0}{0}} (q_1);
+				\end{tikzpicture}
+				\caption{A transducer that prepends a word $w$.}
+				\label{fig:basic_ineq.prepend}
+			\end{figure}
+		\end{enumerate}
+	\end{proof}
+\end{proposition}
+
+We will now prove that ``$\geq$'' forms a partial order and that ``$\equiv$'' is indeed an equivalence relation.
+
+\begin{proposition}\label{poset_streams}
+	The relation ``$\geq$'' is a partial order on the set of streams $\streams$.
+	\begin{proof}
+		We give a sketch of the proof.
+		Let $\sigma,\tau,\kappa\in\streams$ be streams.
+		\begin{sindent}
+			\textbf{(reflexivity)} $\sigma \geq \sigma$ follows directly from \cref{basic_ineq}.\ref{basic_ineq.reflexivity}.\\
+			\textbf{(antisymmetry)} $\sigma \geq \tau\,\land\,\tau \geq \sigma \implies \tau \equiv \sigma$ as per the definition of ``$\equiv$'' given in \cref{def_geq_equiv}.\\
+			\textbf{(transitivity)} $\sigma \geq \tau\,\land\,\tau \geq \kappa \implies \sigma \geq \kappa$. Suppose $\sigma \geq \tau\,\land\, \tau \geq \kappa$. Then can find two transducers $T = (Q,q_s,\delta,\lambda)$ and $T' = (Q',q_s',\delta',\lambda')$ such that $T(\sigma) = \tau\,\land\, T'(\tau) = \kappa$. We can now construct the \textit{wreath product}: $\hat{T} := (Q\times Q',(q_s,q_s'),\delta,\lambda)$ where
+			\begin{align*}
+				\delta((q,q'),s) \qquad &:= \qquad (\delta(q,s),\;\delta'(q,s)) &\text{ for } s\in\textbf{2}\\
+				\lambda((q,q'),s) \qquad &:= \qquad\lambda'(q',\;\lambda(q,s)) &\text{ for } s\in\textbf{2}
+			\end{align*}
+			We claim that this construction gives the required result, namely that $\sigma \geq_{\hat{T}} \kappa$. We will not prove this.
+		\end{sindent}
+	\end{proof}
+\end{proposition}
+
+\begin{proposition}\label{equivalence_relation}
+	The relation ``$\equiv$'' is an equivalence relation on the set of streams $\streams$.
+	\begin{proof}
+		Let $\sigma,\tau,\kappa\in\streams$ be streams.
+		\begin{sindent}
+			\textbf{(reflexivity)} $\sigma \equiv \sigma$ follows directly from \cref{def_geq_equiv} and the reflexivity of ``$\geq$'' as shown in \cref{poset_streams}.
+			$$\sigma \geq \sigma \land \sigma \geq \sigma \implies \sigma \equiv \sigma$$
+			\textbf{(symmetry)} $\sigma \equiv \tau \implies \tau \equiv \sigma$ follows directly from \cref{def_geq_equiv}: 
+			$$\sigma \equiv \tau \implies \sigma \geq \tau \land \tau \geq \sigma \implies  \tau \geq \sigma \land \sigma \geq \tau \implies \tau \equiv \sigma$$
+			\textbf{(transitivity)} $\sigma \equiv \tau \land \tau \equiv \kappa \implies \sigma \equiv \kappa$ follows from the transitivity of ``$\geq$'' as shown in \cref{poset_streams}.
+		\end{sindent}
+	\end{proof}
+\end{proposition}
+
+\begin{theorem}
+	There exists a bottom degree, namely:
+	$$[\0] = \set{uv^{\omega}}{u,v\in\2, \abs{v} > 0}$$
+	\begin{proof} We give a sketch.
+		The fact that $[\0]$ is a bottom degree follows from the fact that every stream can be transduced to $\0$ as shown in \cref{basic_ineq}. We will not prove the fact that $[\0]$ is equal to the set of all \textit{ultimately periodic streams}.
+	\end{proof}
+\end{theorem}

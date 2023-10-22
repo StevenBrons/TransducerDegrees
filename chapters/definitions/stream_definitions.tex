@@ -1,0 +1,102 @@
+\section{Streams}
+
+We start with a few definitions. We have intentionally made this section less mathematical, as we think this helps to get an intuitive sense of the notions introduced. 
+
+\begin{definition}{Words and streams.}\\
+	A \textit{stream} is a function $\sigma: \N \to \Sigma$, where $\Sigma$ is a set of symbols, also called the \textit{alphabet}. We define $\Sigma^{\N}$ to be the set of all streams over alphabet $\Sigma$. We call the stream that only contains zeros the \textit{zero stream} denoted as $\0 := (n \mapsto \s{0})$. Because streams are functions, we say that $\sigma(n)$ is the symbol at index $n$ for each $n\geq0$. A \textit{word} is a finite list of symbols. Let $\Sigma^{*}$ be the set of words over the alphabet $\Sigma$. Let $\epsilon$ be the empty word. If $n\geq0$, we denote a prefix of $\sigma$ by $\sigma_{< n}$. This is the word of length $n$ at the start of the stream. Similar definitions hold for $\sigma_{\leq n},\sigma_{>n}$ and $\sigma_{\geq n}$. We can likewise define prefixes and suffixes of \textit{words} instead of streams. We consider two streams, $\sigma, \tau\in\Sigma^{\N}$ to be the same if for all $n\geq 0$ we have $\sigma_{< n} = \tau_{< n}$.
+\end{definition}
+
+For most of this thesis, we consider streams of two symbols, such that $\Sigma = \{0,1\}$. We denote this by $\mathbf{2} := \{0,1\}$. We will use $\mathbf{2}$ in the next definitions in favor of uniformity, but keep in mind that we could use any set of symbols $\Sigma$. 
+
+\begin{definition}{Word and stream operators.}\\
+	Let $\sigma\in\streams$ be a stream $v,w\in\2$ words, $s\in\mathbf{2}$ a symbol and $k\geq0$ an integer.
+	\begin{enumerate}
+		\item The \textit{shift} operator.
+		\begin{align*}
+			\shift{.}{.} : \N \times \streams &\to \streams \\
+			\shift{k}{\sigma} &:= n \mapsto \sigma(n+k)
+		\end{align*}
+		\item The infix \textit{cons} operator that is overloaded to take streams and words as its second argument.
+		\begin{align*}
+			(:): \mathbf{2} \times \2 &\to \2 \\
+			s : w &:= (s,w(0),w(1),...,w(\abs{w} - 1)) \\
+			(:): \mathbf{2} \times \streams &\to \streams \\
+			(s : \sigma)(n) &:= 
+			\begin{cases}
+			s &\text{ if }	n = 0 \\
+			\sigma(n-1) &\text{ if }	n > 0
+			\end{cases}
+		\end{align*}
+		\item The infix \textit{concatenation} operator defined by induction on the first argument. Note that this definition works for words and streams.
+		\begin{align*}
+			(\cdot):\;\2 \times \2 &\to \2 \\
+			\epsilon \cdot v &:= v \\
+			w \cdot v &:= w(0) : (w_{>0} \cdot v)  &\text{if } \abs{w}>0 \\
+			(\cdot):\;\2 \times \streams &\to \streams \\
+			\epsilon \cdot v &:= v \\
+			w \cdot v &:= w(0) : (w_{>0} \cdot v) &\text{if } \abs{w}>0
+		\end{align*}
+	\end{enumerate}
+\end{definition}
+
+We introduce a \textit{product} notation to make working with streams a lot more elegant.
+
+\begin{notation}\label{extra_stream_notation}
+	Let $n,k\geq0$ be integers, $u\in\2$ a word and $\vec{v}\in(\2)^n$ a list of words.
+	\begin{enumerate}
+		\item $u^{k} := \overbrace{u\cdot u\cdot ... \cdot u}^{k \text{ times}}$
+		\item $\prod_{i=0}^{k}v_i := v_0 \cdot v_1 \cdot ... \cdot v_{k-1}$
+		\item $v^{\omega} := v\cdot v^{\omega}$ \label{extra_stream_notation.omega}
+	\end{enumerate}
+	(Note that the $\omega$ symbol in the superscript of \cref{extra_stream_notation}.\ref{extra_stream_notation.omega} is a lowercase omega)
+\end{notation}
+
+In practice, the definitions of streams and words are quite intuitive. We show some examples below:
+
+\begin{example}{Some words and streams.}
+	\begin{align*}
+		\epsilon &\in \{\s{A},
+		\s{B},\s{C},\s{D}\}^{*} &\s{A} : \s{BBA} &= \s{ABBA} \in \{\s{A},\s{B},\s{C},\s{D}\}^{*} \\ 
+		 \s{01010011}&\in\2 &\s{1001} \cdot 0110 &= \s{10010110} \in \2 \\
+		 \s{101010101}... &\in\streams & \qquad &\prod_{i=0}^{\infty}\s{10}^{i}\in\streams
+	\end{align*}
+\end{example}
+
+Although we will not focus on individual streams in this thesis, we will give some well-known streams to get familiar with the notation. These streams and their formal definitionswhere also mensioned in \cite{streams:degrees:2011}.
+
+\begin{definition}
+	To give a formal definition of the streams below, we introduce the $szip_2$ function. Let $\sigma,\tau\in\streams$. 
+	\begin{align*}
+		szip_2: \streams \times \streams &\to \streams \\
+		szip_2(s : \sigma,\tau) &:= s : szip_2(\tau, \sigma)
+	\end{align*}
+	The $szip_2$ creates a new stream by alternating symbols of the two input streams. In \cref{generalized_function_zip} we define a generalized version of $szip$.
+\end{definition}
+
+\begin{example}[\cite{streams:degrees:2011}]{Well-known streams.}\label{well_known_streams}
+	\begin{itemize}
+		\item \textbf{Thue-Morse stream (A010060 \cite{oeis})}
+		This stream is obtained by starting with \s{0} and then repeatedly appending the boolean complement of the stream so far. We start with \s{0}, add the boolean complement of \s{0}, which is \s{1}, so we get \s{01}. We take the boolean complement of \s{01}, which is \s{10}, so we get \s{0110} and so on. We can give a formal definition. Note that this definition is different from the one given above. We encourage the reader to see that this other definition yields the same stream.
+		\begin{align*}
+			M &:= \s{0} : X \\
+			X &:= \s{1} : szip_2(X,Y) \\
+			Y &:= \s{0} : szip_2(Y,X) \\\\
+			M &= \s{0 1 10 1001 10010110 10010110011010...}
+		\end{align*}
+		\item \textbf{Period doubling stream (A096268 \cite{oeis})} This stream is generated by starting with \s{01} and then repeatedly appending the stream so far to it, but taking the binary complement of the last symbol. So you start with \s{01} and then flip the last bit, so you get \s{00}, and append this. Continue this to infinity and you get the period doubling sequence. We give a formal definition below. Note that, this definition differs from the one described above.
+		\begin{align*}
+			PD &:= szip_2(\0, inv(PD)) \\
+			inv(\s{1} : \sigma) &:= \s{0} : \sigma \\
+			inv(\s{0} : \sigma) &:= \s{1} : \sigma \\\\
+			PD &= \s{01 00 0101 01000100 01000101010001...}
+		\end{align*}
+		% \item \textbf{Mephisto Waltz stream (A064990)} This sequence is generated by starting with \s{0} and then replacing all occurrences of \s{0} by \s{001}, and all occurrences of \s{1} by \s{110}. So, \s{0} becomes \s{001}, and \s{001} becomes \s{001001110} and so on.
+		% $$W = \s{001 001 110 001 001 110 110 110 001 001...}$$
+		\item \textbf{Paperfolding stream (A014577 \cite{oeis})} This stream is generated by starting with \s{1} and then inserting an alternating stream of \s{1} and \s{0} between the previous terms (including the start and end). So in the first iteration, you add \s{1} before the initial \s{1}, and \s{0} after it so you get \s{110}. The next iteration, you insert \s{1} in front, \s{0} between the first and the second symbol, \s{1} between the second and third symbol, and \s{0} at the end. So you get \s{1101100}. The formal definition below resembles this idea.
+		\begin{align*}
+			PF &:= szip_2(alt,PF) \\
+			alt &= \s{1} \cdot (\s{0} : alt) \\\\
+			PF &= \s{110110011100100111011000110010}
+		\end{align*}
+	\end{itemize}
+\end{example}

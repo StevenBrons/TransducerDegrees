@@ -1,0 +1,23 @@
+\section{Transducer degrees}
+We can finally define the main topic of this thesis: \textit{transducer degrees}. We start by defining an order on streams called ``$\geq$''.
+
+\begin{definition}\label{def_geq_equiv}
+	For streams $\sigma,\tau\in\streams$ we say that $\sigma \geq \tau$ if and only if there exists a FST $T$ such that $\sigma \geq_T \tau$.
+	We say that $\sigma \equiv \tau$ if and only if $\sigma \geq \tau \land \tau \geq \sigma$.
+\end{definition}
+
+This definition makes $(\streams, \geq)$ a partially ordered set, poset for short. We show this in \cref{poset_streams}. Furthermore, ``$\equiv$'' is an equivalence relation, as we show in \cref{equivalence_relation}. This makes it possible to speak about the equivalence classes of the quotient $\TD$. We denote the equivalence class of a stream $\sigma\in\streams$ by $[\sigma]\in\TD$.
+
+\begin{definition}{Transducer degree.}\\
+	A \textit{transducer degree} is an element of the set of equivalence classes $[\sigma] \in \TD$ of the equivalence relation $\equiv$ defined above. We call this set of equivalence classes \textit{transducer degrees}.
+\end{definition}
+
+We can again define a partial order, this time on \textit{transducer degrees}. 
+
+\begin{definition}\label{order_on_td}
+	For transducer degrees $[\sigma],[\tau]\in\TD$ we say that $[\sigma] \geq [\tau] \iff \sigma \geq \tau$. Note that we use the same symbol to denote the order on transducer degrees and streams. 
+\end{definition}
+
+We must show that this definition is well defined: that it does not depend on the specific representatives $\sigma,\tau$. We must show that, for streams $\sigma,\sigma',\tau,\tau'\in\streams$, if $\sigma \equiv \sigma'$ and $\tau \equiv \tau'$, then $[\sigma] \geq [\tau] \iff [\sigma'] \geq [\tau']$. This follows directly from the definition of $\equiv$ and the fact that $\geq$ (as order on streams) is transitive.
+\\
+In this thesis, we will mainly speak about facts of streams, but because of the above definition, we can directly translate this to facts about transducer degrees. 

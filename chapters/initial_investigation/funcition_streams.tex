@@ -1,0 +1,115 @@
+\section{Function streams}
+In this section we define \textit{function streams}, a way to transform a function $f: \N \to \N$ into a stream $\sigma$.
+
+\begin{definition}{Function stream.}\label{def_function_stream}\\
+	Let $f: \N \to \N$ be a function.
+	We define the \textit{function stream} $\fs{f}$ by:
+	\begin{align}
+		\fs{f} := \prod_{i=0}^{\infty} \s{10}^{f(i)}
+	\end{align}
+	We will call each sequence $\s{10}^{f(i)}$ a \textit{block}. Sometimes we will refer to function streams as block streams.
+\end{definition}
+
+We can transform any function defined on the natural numbers into a stream. We will (ab)use the $\fs{.}$ notation to denote the following:
+
+\begin{notation}{Overloading the $\fs{.}$ notation.}
+	\begin{enumerate}
+		\item We will sometimes write $\fs{f(n)}$ instead of $\fs{n \mapsto f(n)}$. Examples:
+		\begin{itemize}
+			\item $\fs{n^2} = \fs{n \mapsto n^2}$
+			\item $\fs{3n^3+2n+1} = \fs{n \mapsto 3n^3+2n+1}$
+		\end{itemize}
+		% \item If give a constant as input, we mean a single block: $\fs{x} := 10^{x}$ for $x\in\N$. Examples:
+		% \begin{itemize}
+		% 	\item $\fs{3} = 10^{3} = 1000$
+		% 	\item $\fs{0} = 10^{7} = 10000000$
+		% \end{itemize}
+		\item We introduce the following set-like notation: $\bs{n}{a}{b} := \prod_{n=a}^{b-1}\s{10}^{f(n)}$. Examples:
+		\begin{itemize}
+			\item $\bs{n}{1}{4}$ for $f(n) := 2n$ gives $\bs{n}{1}{4} = \prod_{n=1}^{3}\s{10}^{2n} = \s{10}^{2}\s{10}^{4}\s{10}^{6}=\s{100100001000000}$
+			\item $\bs{3+2n}{a}{b}$ for $a,b\geq0$ and $f : \N \to \N$ gives $\bs{3+2n}{a}{b} = \prod_{n=a}^{b} \s{10}^{f(3+2n)}$
+		\end{itemize}
+	\end{enumerate}
+\end{notation}
+
+\begin{definition}{Shift function.}\label{shift_function_def}\\
+	We define the \textit{shift function} $\mathcal{S}^{k}: (\N \times (\N \to \N)) \to (\N \to \N)$ by $\shift{k}{f} := n \mapsto f(n + k)$ for all $k\geq 0$. As the name suggests, $\mathcal{S}^k$ shifts a given function $k$ places, for example $\shift{2}{n \mapsto 2n} = n \mapsto 2n+2$
+\end{definition}
+
+\begin{lemma}{Simple facts about function streams.}\label{simple_fs_facts}\\
+	Let $f: \N \mapsto \N$ be a natural function.
+	\begin{enumerate}
+		\item $\fs{\shift{a}{f}} = \fs{n \mapsto f(n+a)} \equiv \fs{f}$ for all $a\geq0$. \label{simple_fs_facts.shift}
+		\item $\fs{af(n)} \equiv \fs{f(n)}$ for all $a>0$. \label{simple_fs_facts.divide}
+		\item $\fs{f(n) + a} \equiv \fs{f(n)}$ for all $a\geq0$. \label{simple_fs_facts.plus_a}
+		\item $\fs{f(n)} \geq \fs{f(an)}$ for all $a>0$. \label{simple_fs_facts.an}
+		% \item $\fs{f(n)} \geq \fs{af(2n)+bf(2n+1)}$ for all $a,b\geq0$
+	\end{enumerate}
+	\begin{proof}\hfill\nopagebreak\\
+		\nopagebreak
+		As per \cref{def_geq_equiv}, we will seperately show ``$\geq$'' and ``$\leq$'' when we want to show an equivalence ``$\equiv$''.
+		\begin{enumerate}
+			\item ($\geq$) We create a FST that skips the first $k$ blocks of $\fs{f}$. Let $T := (Q,q_0,\delta,\lambda)$, where $Q := \{q_0,q_1,...,q_{k+1}\}$. Define $\delta$ and $\lambda$ as follows: 
+			\begin{align*}
+				\delta(q_i, \s{0}) &:= q_i & \lambda(q_i,\s{0}) &:= \epsilon \qquad\text{ for } i < k + 1\\
+				\delta(q_i, \s{1}) &:= q_{i + 1} & \lambda(q_i,\s{1}) &:= \epsilon \qquad\text{ for } i < k + 1\\
+				\delta(q_{k+1}, \s{0}) &:= q_{k+1} & \lambda(q_{k+1},\s{0}) &:= \s{0} \\
+				\delta(q_{k+1}, \s{1}) &:= q_{k+1} & \lambda(q_{k+1},\s{1}) &:= \s{1}
+			\end{align*}
+			This transducer is shown below in \cref{fig:simple_fs_facts.shift}.
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}
+					\node[state,initial] (q_0) {$q_0$};
+					\node[state,right of=q_0] (q_1) {$q_1$};
+					\draw (q_0) edge node[above]{\lb{1}{\epsilon}} (q_1);
+					\node[state,right of=q_1] (q_{k-1}) {$q_{k}$};
+					\draw[curvy] (q_1) -- (q_{k-1});
+					\node[state,right of=q_{k-1}] (q_k) {$q_{k+1}$};
+					\draw (q_{k-1}) edge node[above]{\lb{1}{\epsilon}} (q_k);
+					\draw (q_k) edge[loop above,looseness=12] node[above,yshift=12]{\lb{1}{\s{1}}} node[above]{\lb{0}{\s{0}}} (q_k);
+					\draw (q_0) edge[loop above, looseness=12] node[above] {\lb{0}{\epsilon}} (q_0);
+					\draw (q_1) edge[loop above, looseness=12] node[above] {\lb{0}{\epsilon}} (q_1);
+					\draw (q_{k-1}) edge[loop above, looseness=12] node[above] {\lb{0}{\epsilon}} (q_{k-1});
+				\end{tikzpicture}
+				\caption{A transducer that shifts a function stream by $k$ blocks.}
+				\label{fig:simple_fs_facts.shift}
+			\end{figure}
+			($\leq$) Let $w := \bs{n}{0}{k+1}$ be the word equal to the first $k$ blocks of $\fs{f}$. By \cref{basic_ineq}.\ref{basic_ineq.prepend} we know that $\fs{\shift{k}{f}} \geq w \cdot \fs{\shift{k}{f}} = \fs{f}$.
+			\item ($\geq$) The following FST $T$ replaces every factor of $\s{0}^a$ by $\s{0}$. Notice that we can assume $f(n)$ to be a multiple of $a$ for each $n\geq0$. Let $T := (Q,q_0,\delta,\lambda)$ with $Q := \{q_0,q_1,...,q_{a}\}$ and the input and output functions defined by 
+			\begin{align*}
+				\delta(q_i, \s{0}) &:= q_{i + 1} & \lambda(q_i,\s{0}) &:= \epsilon \qquad\text{ for } i < a\\
+				\delta(q_i, \s{1}) &:= q_i & \lambda(q_i,\s{1}) &:= \s{1} \qquad\text{ for } i < a\\
+				\delta(q_{a}, \s{0}) &:= q_{0} & \lambda(q_{a},\s{0}) &:= \s{0} \\
+				\delta(q_{a}, \s{1}) &:= q_{0} & \lambda(q_{a},\s{1}) &:= \s{1}
+			\end{align*}
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}
+					\node[state,initial] (q_0) {$q_0$};
+					\node[state,right of=q_0] (q_1) {$q_1$};
+					\draw (q_0) edge node[above]{\lb{0}{\epsilon}} (q_1);
+					\node[state,right of=q_1] (q_{a-1}) {$q_{a-1}$};
+					\draw[curvy] (q_1) -- (q_{a-1});
+					\node[state,right of=q_{a-1}] (q_a) {$q_{a}$};
+					\draw (q_{a-1}) edge node[above]{\lb{0}{\epsilon}} (q_a);
+					\draw (q_a) edge[loop above,looseness=12] node[above]{\lb{1}{\s{1}}} (q_a);
+					\draw (q_0) edge[loop above, looseness=12] node[above] {\lb{1}{\s{1}}} (q_0);
+					\draw (q_1) edge[loop above, looseness=12] node[above] {\lb{1}{\s{1}}} (q_1);
+					\draw (q_{a-1}) edge[loop above, looseness=12] node[above] {\lb{1}{\s{1}}} (q_{a-1});
+					\draw (q_a) edge[bend left] node[below] {\lb{0}{\s{0}}} (q_0);
+				\end{tikzpicture}
+				\caption{A transducer that replaces $\s{0}^a$ by $\s{0}$.}
+				\label{fig:simple_fs_facts.shift}
+			\end{figure}
+			($\leq$) Let $T$ be a FST that replaces each $\s{0}$ by $\s{0}^a$ defined by $T := (\{q_s\},q_s,\delta,\lambda)$, where
+			\begin{align*}
+				\delta(q_s, \s{0}) &:= q_s & \lambda(q_s, \s{0}) &:= \s{0}^{a} \\
+				\delta(q_s, \s{1}) &:= q_s & \lambda(q_s, \s{1}) &:= \s{1}
+			\end{align*}
+			\item ($\geq$) This transduction is realised by a FST that removes $a$ zeros from each block. \\
+			($\leq$) Adding $a$ zeros to each block can also be done by a FST.
+			\item A FST can output every $a$-th block, and replace the rest by $\epsilon$. Notice that the transduction back is not always possible because a FST cannot guess the missing values of an arbitrary function.
+		\end{enumerate}
+	\end{proof}
+\end{lemma}

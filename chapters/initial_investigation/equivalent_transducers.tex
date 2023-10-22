@@ -1,0 +1,60 @@
+\section{Equivalent transducers}
+
+As stated in the introduction, it is sufficient to restrict ourselfs to  look at streams over $\mathbf{2}$ because this yield an equivalent order on transducer degrees. In this section we will make this claim more precise and proof it. To do so, we have to look at streams over different alphabets such as briefly introduced before. We also need a FST that can read symbols from one alphabet ($\Sigma$) and output symbols in a different alphabet ($\Gamma$).
+\begin{definition}{Finite State Transducer over different alphabets ($FST_\Sigma^\Gamma$)}\\
+	We define a finite state transducer over different alphabets to be a $6$-tuple $\hat{T} = (\Sigma, \Gamma, Q,q_s,\delta,\lambda)$ where:
+	\begin{itemize}
+		\item $\Sigma$ is the input alphabet.
+		\item $\Gamma$ is the output alphabet.
+		\item $Q$ is the set of states.
+		\item $q_s$ is the start state.
+		\item $\delta: Q \times \Sigma \to Q$ the transition function.
+		\item $\lambda: Q \times \Sigma \to \Gamma$ the output function.
+	\end{itemize}
+\end{definition}
+
+We define an encoding function to be any function that translates a set of symbols to words of $\mathbf{2}$. Notice that this definition is quite loose. 
+
+\begin{definition}{Encoding functions.}\\
+	Let $\Sigma$ be an alphabet.
+	We will call a function $\Phi: \Sigma \to \2$ an encoding function. We overload this function to work on words and streams: 
+	\begin{align*}
+		\Phi: \Sigma^{\N} &\to \streams \\
+		\Phi(\epsilon) &= \epsilon \\
+		\Phi(s:\sigma) &= \Phi(s) : \sigma
+	\end{align*}
+\end{definition}
+
+
+
+We actually want an encoding that can always be translated back uniquely by an FST. For this we need to define a prefix code. 
+
+\begin{definition}{Prefix encoding function.}
+	We say that a function $\Phi: \Sigma \to \2$ is a prefix encoding function if
+	
+\end{definition}
+
+\begin{lemma}\label{trans_code}
+	Let $\Phi : \Sigma \to \2$ be a mapping from symbols of one alphabet to words $\sigma$ of $\2$. We can create a finite state transducer $\hat{T} = (\Sigma, \Gamma, Q,q_s,\delta,\lambda)$ such that for any stream $\tau \in \streams$ we have $\Phi(\tau) = T(\tau)$.
+\end{lemma}
+
+\begin{lemma}\label{apply_encoding}
+	Let $\Phi: \Sigma \to \2$ be any code. Then for any stream $\sigma\in\Sigma^*$ we have $\sigma \geq \Phi(\sigma)$.
+\end{lemma}
+
+\begin{proposition}
+	Let $\hat{T} = (\Sigma, \{0,1\}, Q,q_s,\delta,\lambda)$ be a FST with input alphabet $\Sigma$ and output alphabet $\{0,1\}$ and $\Phi : \Sigma \to \{0,1\}*$ a prefix code. Let $\tau \in \Sigma^\N$ and $\sigma \in \streams$.\\
+	Then $\tau \geq_{\hat{T}} \sigma \iff \Phi(\tau) \geq \sigma$
+\end{proposition}
+
+\begin{proposition}
+	Let $\hat{T} = (\{0,1\}, \Gamma, Q,q_s,\delta,\lambda)$ be a FST with input alphabet $\{0,1\}$ and output alphabet $\Gamma$, $\Phi : \Gamma \to \{0,1\}$ a prefix code, $\tau \in \streams$ and $\sigma \in \Gamma^{\N}$.\\
+	Then $\tau \geq_{\hat{T}} \sigma \iff \tau \geq \Phi(\sigma)$
+\end{proposition}
+
+\begin{theorem}
+	Let $\tau \in \Sigma^{\N}$ and $\sigma \in \Gamma^{\N}$. Then
+	$$\tau \geq_{\hat{T}} \sigma \iff \Phi_{\Sigma}(\tau) \geq \Phi_{\Gamma}(\sigma)$$
+	for arbitrary prefex codes $\Phi_\Sigma : \Sigma \to \{0,1\}, \Phi_\Gamma : \Gamma \to \{0,1\}$.
+\end{theorem}
+

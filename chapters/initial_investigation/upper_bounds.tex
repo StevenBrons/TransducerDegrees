@@ -1,0 +1,93 @@
+\section{Upper bounds}
+We will quickly go over the existence of upper bounds of a set of streams. An easy way to create an upper bound is to \textit{zip} the set of streams. We will define two zipping functions, one that works on streams \textit{szip} and one that works on functions: \textit{\fzip}.
+
+
+\begin{definition}{$\fzip$.}\\
+	Let $k>0$ and $f_0,f_1,...,f_{k-1} : \N \to \N$ be natural functions.\\
+	Define $\fzip_k(f_0,f_1,...,f_{k-1}):\;\N \to \N$ by
+	\begin{align}
+		\fzip_k(f_0,f_1,...,f_{k-1})(kn+i) = f_i(n)
+		\qquad\text{ where } i<k,n\geq 0 
+	\end{align}
+\end{definition}
+
+\begin{definition}{$szip$ (short for stream-zip).}\label{generalized_function_zip}\\
+	Let $k>0$ and $\sigma_0,\sigma_1,...,\sigma_{k-1} \in (\streams)^k$ be natural streams.\\
+	Define $szip_k(\sigma_0,\sigma_1,...,\sigma_{k-1}) \in \streams$ by
+	\begin{align}
+		szip_k(\sigma_0,\sigma_1,...,\sigma_{k-1}) := \fzip_k(\sigma_0,\sigma_1,...,\sigma_{k-1})
+	\end{align}
+\end{definition}
+
+Although the two definitions are identical, we want to stress that we sometimes zip \textit{streams} together and sometimes zip \textit{other functions} together.
+
+\begin{example}
+	\begin{align*}
+		szip_2(\0,(1)^\omega) &= (01)^\omega \\
+		\fzip_2(n \mapsto 2n, n \mapsto n^2) &= 
+		\begin{cases}
+			n \mapsto n &\qquad \text{ if } n \text{ is even} \\
+			n \mapsto \floor{\frac{n-1}{2}}^2 &\qquad \text{ if } n \text{ is odd} 
+		\end{cases}
+	\end{align*}
+\end{example}
+
+
+\begin{definition}
+	If $S\of\TD$ is a set of transducer degrees. We say that $[u]\in\TD$ is an \textit{upper bound} of $S$, if for all $[\sigma]\in S$ we have $[u] \geq [\sigma]$.
+\end{definition}
+
+We can now highlight \textbf{an important difference} between the partial order on streams $(\streams,\;\geq)$ and the partial order on transducer degrees $(\streams / \equiv,\;\geq)$. It only makes sense to talk about upper bounds in the partial order of transducer degrees. Within the poset of streams, any two equivalent streams would be each others upper bound. 
+
+\begin{lemma}
+	If $\sigma,\tau\in\streams$, then $[szip_2(\sigma,\tau)]$ is an upper bound of $\{[\sigma],[\tau]\}$.
+	\begin{proof}
+		We show that $szip_2(\sigma,\tau) \geq_T \sigma$ and $szip_2(\sigma,\tau) \geq_{T'} \tau$ by giving FSTs $T$ and $T'$:
+		\begin{align*}
+			T &:= (\{q_0,q_1\},q_0,\delta,\lambda) &T' &:= (\{q_0,q_1\},q_1,\delta,\lambda) \\
+			\delta(q_0,s) &:= q_1 &\lambda(q_0,s) &:= s &\qquad \text{ for } s\in\mathbf{2}\\
+			\delta(q_1,s) &:= q_0 &\lambda(q_1,s) &:= \epsilon &\qquad \text{ for } s\in\mathbf{2}
+		\end{align*}
+		See \cref{fig:zip_trans} for a visualisation. Note that the only difference between $T$ and $T'$ is the initial state.
+		\begin{figure}[H]
+			\centering
+			\begin{tikzpicture}
+				\node[state, initial] (q0) {$q_0$};
+				\node[state] (q1) at (2,0) {$q_1$};
+ 				\draw (q0) edge[bend left] node[above,yshift=-0.1cm] {\lb{0}{\s{0}}} node[above,yshift=0.3cm] {\lb{1}{\s{1}}} (q1);
+ 				\draw (q1) edge[bend left] node[below,yshift=0.1cm] {\lb{0}{\epsilon}} node[below,yshift=-0.3cm] {\lb{1}{\epsilon}} (q0);
+				 
+				 \node[state] (q0) at (6,0) {$q_0$};
+				 \node[state, initial right] (q1) at (8,0) {$q_1$};
+ 				\draw (q0) edge[bend left] node[above] {\lb{0}{\s{0}}} node[above,yshift=0.4cm] {\lb{1}{\s{1}}} (q1);
+ 				\draw (q1) edge[bend left] node[below] {\lb{0}{\epsilon}} node[below,yshift=-0.4cm] {\lb{1}{\epsilon}} (q0);
+
+			\end{tikzpicture}
+			\caption{A FST that drops every second symbol ($T$, left) and a FST that drops every second symbol with an offset of one ($T'$, right)}
+			\label{fig:zip_trans}
+		\end{figure}
+	\end{proof}
+\end{lemma}
+
+\begin{lemma}\label{upper_bounds_functions}
+	If $f,g: \N \to \N$, then $[\fs{\fzip_2(f,g)}]$ is an upper bound of $\{[\fs{f}],[\fs{g}]\}$.
+	\begin{proof}
+		We need to show that $\fs{\fzip_2(f,g)} \geq \fs{f}$ and $\fs{\fzip_2(f,g)} \geq \fs{g}$. This is easily done by applying \cref{simple_fs_facts}.
+		\begin{align*}
+			\fs{n \mapsto \fzip_2(f,g)(n)} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.an}}{\geq} \fs{n \mapsto \fzip_2(f,g)(2n)} = \fs{f}\\
+			\fs{n \mapsto \fzip_2(f,g)(n)} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.shift}}{\equiv} \fs{n \mapsto \fzip_2(f,g)(n + 1)} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.an}}{\geq} \fs{n \mapsto \fzip_2(f,g)(2n + 1)} = \fs{g}
+		\end{align*}
+	\end{proof}
+\end{lemma}
+
+\begin{lemma}[\cite{streams:degrees:2011}]
+	Every countable set of degrees $\{[\sigma_i]\}_{i=0}^{\infty}$ has an upper bound.
+\end{lemma}
+
+Now that we have seen that upper bounds exist, we can wonder if two degrees have a \textit{least upper bound} also known as the \textit{supremum}.
+
+\begin{definition}
+	A set $S\of\TD$ of transducer degrees has a \textit{least upper bound} or a \textit{supremum} $[s]\in\TD$ if, for each upper bound $[u]\in\TD$ of $S$ we have $[u] \geq [s]$.
+\end{definition}
+
+In \cref{suprema_section} we will illustrate that suprema do not always exist.

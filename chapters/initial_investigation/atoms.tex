@@ -1,0 +1,13 @@
+\section{Atoms}
+We have seen that all streams can be transduced to the zero stream $\0$. A logical next question is if there are \textit{atom} degrees, that is, degrees that only have the zero degree $[\0]$ strictly below them. 
+
+\begin{definition}
+	A degree $[\sigma]\in\TD$ is called an \textit{atom} if $[\sigma]\geq[\tau]$ implies $[\tau] = [\sigma] \lor [\tau] = [\0]$.
+	Alternatively, $[\sigma]$ is an atom if $\sigma \geq \tau \implies \tau \geq \0 \lor \tau \geq \sigma$.
+\end{definition}
+
+\begin{theorem}[\cite{streams:degrees:2011}]\label{n_atom}
+	$[\fs{n}]$ is an atom.
+\end{theorem}
+
+We will not prove the above theorem here. We will focus on a bigger fish, namely the fact that $[\fs{n^2}]$ is an atom. To prove this, we have quite a way to go. We start by introducing a new class of functions that will aid us in understanding transducts of function streams.

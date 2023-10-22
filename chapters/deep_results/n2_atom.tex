@@ -1,0 +1,72 @@
+\section{$[\fs{n^2}]$ is an atom}
+In this section, we proof the fact that the degree $[\fs{n^2}]$ is an atom. To do this, we show some corollaries of \cref{mass_product_spir}.
+
+\begin{corollary}[\cite{streams:degrees:squares:2015}]\label{fs_weight}
+	Let $f\in\spir$ and $\fs{f} \geq \sigma$ with $\sigma \not\equiv \0$, then we have $\sigma \geq \fs{\tup{b} \oplus ((\weight[a]) \otimes \shift{k}{f})}$ for some $k\geq 0$, a non-constant weight $\weight[a]$ and an integer $b$.
+	\begin{proof}
+		 For this proof we refer to \cite{streams:degrees:squares:2015}. 
+	\end{proof}
+\end{corollary}
+
+\begin{proposition}[\cite{streams:degrees:squares:2015}]\label{poly_trans}
+	If $P_k$ is a polynomial of degree $k\geq 0$ with non-negative integer coefficients and $\fs{P_k} \geq \sigma$ with $\sigma \not\equiv \0$, then $\sigma \geq \fs{P'_k}$ for some polynomial $P'_k$ of the same degree $k$ with non-negative integer coefficients.
+	\begin{proof}
+		By \cref{fs_weight} we have that 
+		$$\sigma \geq \fs{[b]\oplus((\weight[a])\otimes\shift{c}{P_k})}$$
+		for some $c>0,\; b\in\Z$ and a non-constant weight $\weight[a] = \tup{a_0,a_1,...,a_{l-1}}$ with $l > 0$. We can apply the definition of the mass product and weight displacement:
+		\begin{align*}
+			([b] \oplus ((\weight[a]) \otimes \shift{c}{P_k})) &=
+			n \mapsto ([b] \oplus ((\weight[a]) \otimes \shift{c}{P_k}(n))) = \\
+			n \mapsto ([b] \oplus ((\weight[a]) \otimes P_k(c+n))) &= 
+			n \mapsto ([b] \oplus (\sum_{j=0}^{l-1}a_j*P_k(c+nl+j))) = \\
+			n \mapsto (b + \sum_{j=0}^{l-1}a_j*&P_k(c+nl+j))
+		\end{align*}
+		it is clear that the last equation is a polynomial of degree $k$ with non-negative integer coefficients.
+	\end{proof}
+\end{proposition}
+
+\begin{corollary}[\cite{streams:degrees:squares:2015}]\label{f_ineq_v}
+	Let $f: \N \to \N$ and $a,b\in\N$, then 
+	$\fs{f(n)} \geq \fs{af(2n) + bf(2n+1)}$
+	\begin{proof}
+		This follows from \cref{f_transto_massprod} where we take $\weight := \tup{0}$ and $\mass := (\tup{a},\tup{b})$ and $k := 0$. 
+		\begin{gather*}
+			\fs{n \mapsto f(n)} \geq \\
+			\fs{n \mapsto (\weight \oplus (\mass \otimes \shift{k}{f}))} = \\
+			\fs{n \mapsto (\tup{0} \oplus ((\tup{a},\tup{b}) \otimes \shift{0}{f}))} = \\
+			\fs{n \mapsto ((\tup{a},\tup{b}) \otimes f)} = \\
+			\fs{n \mapsto af(2n) + bf(2n+1)} = \\
+			\fs{af(2n) + bf(2n+1)}
+		\end{gather*}
+	\end{proof}
+\end{corollary}
+
+\begin{theorem}[\cite{streams:degrees:squares:2015}]\label{n2_atom}
+	The degree $[\fs{n^2}]$ is an atom.
+	\begin{proof}
+		Let $\fs{n^2} \geq \sigma$, with $\sigma \not\equiv \0$. By \cref{poly_trans} we know that $\sigma \geq \fs{n \mapsto an^2 + bn + c}$ for some $a>0$ and $b,c\geq0$. \\
+		
+		Without loss of generality, assume that $2a \geq b$. If not choose, $d>0$ such that $2ad \geq b$ and note that $\fs{an^2 + bn+c} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.an}}{\geq} \fs{ad^2n^2 + bdn+c} = \fs{a'n^2 + b'n+c}$ where $a' = ad^2$ and $b' = bd$.\\
+		
+		We now derive:
+		\begin{gather*}
+			\fs{an^2 + bn + c} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.plus_a}}{\equiv}
+			\fs{an^2 + bn} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.shift}}\equiv \\
+			\fs{a(n+1)^2 + b(n+1)} = 
+			\fs{an^2 + 2na + a + bn + b} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.plus_a}}{\equiv} \\
+			\fs{an^2 + (2a + b)n} =: \fs{f(n)}	
+		\end{gather*}
+		We define $f(n) = an^2 + (2a + b)n$. Note that we have that $2a + b\geq 0$. By \cref{f_ineq_v} we can see that:
+		\begin{gather*}
+			\fs{f(n)} \overset{\ref{f_ineq_v}}{\geq}
+			\fs{b(f(2n)) + (2a-b)(f(2n+1))} = \\
+			\fs{b(a(2n)^2 + (2a + b)2n) + (2a-b)(a(2n+1)^2 + (2a + b)(2n + 1))} = \\ 
+			\fs{8a^2n^2+16a^2n+6a^2-ab - b^2} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.plus_a}}{\equiv} \\ 
+			\fs{8a^2n^2+16a^2n} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.plus_a}}{\equiv} 
+			\fs{8a^2(n+1)^2} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.divide}}{\equiv} \\ 
+			\fs{(n+1)^2} \overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.shift}}{\equiv}  
+			\fs{n^2}
+		\end{gather*}
+		This shows that every transduct of $\fs{n^2}$ is either equivalent to $\0$ or can be transduced back to $\fs{n^2}$.
+	\end{proof}
+\end{theorem}

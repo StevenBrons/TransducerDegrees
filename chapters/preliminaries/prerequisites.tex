@@ -1,0 +1,19 @@
+\section{Prerequisites}
+We assume familiarity with basic automata theory. We will speak a lot about \textit{finite state transducers}. These transducers are very similar to deterministic finite automata, as known in automata theory. We assume that the reader is familiar with mathematical proofs. Most of the proofs are not too difficult. However, the majority of this thesis consists of mathematics, so be warned.
+
+Some of the mathematical concepts we assume the reader to be familiar are: 
+\textit{equivalence relations}, 
+\textit{partially ordered sets (posets)}, 
+\textit{the pigeonhole principle}, 
+\textit{the greatest common devisor (gcd)}
+and
+\textit{the least common multiple (lcm)}.
+
+\section{About our proofs}
+In this thesis we will try to prove as many statements as possible, but we have to draw the line somewhere. When we require a FST for a proof, we will give the mathematical notation and in most cases a visual representation. If we want to be really precise, we would have to prove that a FST truly gives the required result by induction on the stream. We will not do this because this is quite tedious and does not give much additional insight.
+
+\section{Notation}
+We say that $0\in\N$. Whenever we define an inline variable such as $n \geq 0$ or $x < n$, we assume this variable to be an integer $(\in\Z)$ unless explicitly stated otherwise. Sometimes, when we define a new variable we denote this using the $:=$ sign to stress the fact that we \textit{define} something and not \textit{derive} something. 
+
+\section{Citing}
+In this thesis, we heavily rely on the work of \textit{Jörg Endrullis}. The primary focus of this thesis, the proof that the degree of squares is an atom, was shown in \cite{streams:degrees:squares:2015}. Whenever a definition, proposition, corollary, lemma or theorem is similar to one stated in another paper, we will link the source. All proofs that we give are of our own making, although they are often heavily inspired by their original versions. In many cases, we have introduced more examples, elaborated on parts that we thought were not clear, or introduced new concepts. We encourage the reader to look at the original papers.

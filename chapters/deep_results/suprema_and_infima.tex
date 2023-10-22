@@ -1,0 +1,58 @@
+\section{Suprema}
+\label{suprema_section}
+
+As previously mentioned, not every set of transducer degrees has a supremum. This was shown in \cite{streams:degrees:suprema:2020} by giving an example of a set of two degrees that does not have a supremum.
+
+\begin{definition}
+	A set $S\of\TD$ of transducer degrees has a \textit{least upper bound} or a \textit{supremum} $[s]\in\TD$ if, for each upper bound $[u]\in\TD$ of $S$ we have $[u] \geq [s]$.
+\end{definition}
+
+
+We first give a definition of an equivalence relation on natural functions:
+
+\begin{definition}[\cite{streams:degrees:suprema:2020}]
+	Let $f,h: \N \to \N$. Then we define the relation ``$\approx$'' as follows:
+	$$f \approx h \iff \exists c_1,c_2>0 \exists n_f,n_h\geq 0 \forall n\qquad c_1h(n_h + n) \leq f(n_f + n) \leq c_2 h(n_h +n)$$ 
+\end{definition}
+
+The idea of the next proof is that mass products, weight displacements and shifts as defined in \cref{product_displacement_definition,shift_function_def} do not change their equivalence by ``$\approx$''. So if $f \approx h$ then $f \approx \weight \oplus (\mass \otimes \shift{k}{h})$ for every positive mass $\mass$, every weight $\weight$ and each $k\geq 0$.
+
+
+\begin{theorem}[\cite{streams:degrees:suprema:2020}]
+	The set of degrees $S := \{[\fs{2^{2^{n}}}],[\fs{3^{3^{3^n}}}]\}\of\TD$ does not have a supremum.
+	\begin{proof}
+		
+We will give a sketch of why this is the case.
+
+\begin{align}
+	t_1 &:= 2^{2^{n}} & \qquad t_1 &:= 3^{3^{3^n}} \\
+	u_1 &:= \fzip_2(2^{2^{n}},3^{3^{3^n}}) & \qquad u_2 &:= \fzip_2(3^{3^{3^n}},2^{2^{n}}) \\ \nonumber \\
+	\tau_1 &:= \fs{t_1} & \qquad\tau_1 &:= \fs{t_2} \\
+	\mu_1 &:= \fs{\fzip_2(t_1,t_2)} & \qquad \mu_2 &:= \fs{\fzip_2(t_1,t_2)}
+\end{align}
+One can clearly see that $n\mapsto 2^{2^{n}} \not\approx n \mapsto 3^{3^{3^n}}$.
+
+By \cref{upper_bounds_functions} we know that $\mu_1$ and $\mu_2$ are upper bounds of $\{[\tau_1],[\tau_2]\}$.  \\
+
+It was shown in \cref{more_spir} that $t_1,t_2\in\spir$. By \cref{\fzip_spir} we know that $u_1,u_2\in\spir$. We can therefore apply \cref{mass_product_spir} and see that:
+
+\begin{align}
+	\mu_1 \geq \theta_1 \implies \theta_1 \equiv \weight \oplus (\mass \otimes u_1)) \label{sup_pf4}\\ 
+	\mu_2 \geq \theta_2 \implies \theta_2 \equiv \weight' \oplus (\mass' \otimes u_2)) \label{sup_pf5}
+\end{align}
+
+for some weights $\weight,\weight'$ and masses $\mass,\mass'$.
+
+Suppose that a supremum degree $[\gamma]\of\TD$ exists.
+By the definition of a supremum we need to have that:
+\begin{align}
+	\mu_1\geq\gamma \text{ and }\gamma\geq\tau_1\land\gamma\geq\tau_1 \label{sup_pf1}\\
+	\mu_2\geq\gamma \text{ and }\gamma\geq\tau_1\land\gamma\geq\tau_2 \label{sup_pf3}
+\end{align}
+
+So we know that $\gamma = \fs{g}$ for some spiralling function $g\in\spir$ because of \cref{sup_pf4,sup_pf5}. In \cite{streams:degrees:suprema:2020} it was shown that \cref{sup_pf1} implies $u_1 \approx g$ and that \cref{sup_pf3} implies $u_2 \approx g$ but then by transitivity of $\approx$ we would have that $u_1 \approx u_2$, which contradicts the fact that $u_1 \not\approx u_2$.
+
+\end{proof}
+\end{theorem}
+
+The above proof shows that not all sets of degrees have a supremum. This does however not say that there do not exist sets of degrees with a supremum. We only know that, in general, not all sets of degrees have a supremum. Whether there are sets that do have a supremum is still an open question.

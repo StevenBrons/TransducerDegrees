@@ -1,0 +1,97 @@
+\section{FST pumping lemma}
+
+A FST has only finitely many states, say $\abs{Q}$. So whenever the FST has read more than $\abs{Q}$ symbols, it must be in a state it has already been in. In this way, we can identify loops within the blocks of function streams.
+
+\begin{definition}[\cite{streams:degrees:2011}]{Zero loops.}\label{def_zero_loop}\hfill\\
+	Let $T:=(Q,q_s,\delta,\lambda)$ be a FST.
+	\begin{enumerate}
+		\item A \textit{zero loop} $Z$ of a FST is a sequence of states $Z := (q_0,q_1,...,q_{l-1})$ for some $l>0$, such that any two subsequent states $q_i$ and $q_{i+1}$ are connected by a zero-transition. Furthermore $q_{l-1}$ and $q_0$ are connected by a zero-transition too, so that the states form a loop when you only read zeros. Finally, no state may occur twice in $Z$. More formally:
+		\begin{align}
+			\qquad \delta(q_j,\s{0})&=q_{j+1} \qquad &(\text{for all } j < l-1 )\\
+			\delta(q_{l-1},\s{0})&=q_{0}\\
+ 			\text{if } i\neq j \text{ then } q_i &\neq q_j \qquad &(\text{for all } i,j<l )
+		\end{align}
+		\item The \textit{length} of a zero loop $Z$ is the number $l>0$ of distinct states in that loop.
+		\item Let $Z(T)$ be the least common multiple of the lengths of all zero loops of $T$. Notice that, because $\abs{Q}$ is finite, we have finitely many zero loops. Furthermore, for every zero loop $Z$, we have that $length(Z)*k = Z(T)$ for some $k>0$.
+	\end{enumerate}
+\end{definition}
+
+Before we prove some simple facts about zero loops, it is helpful to get a sense of what a zero loop is by looking at the illustration in \cref{fig:zero_loop}.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\node[state, initial] (qs) {$q_s$};
+		\node[state, right of=qs,node distance = 4cm] (q0)  {$q_0$};
+		\node[state, right of=q0,node distance = 4cm] (q1)  {$q_1$};
+		\node[state, above of=q1] (q2) {$q_2$};
+		\node[state, above of=q0] (ql-1) {$q_{l-1}$};
+		
+		\draw (qs) edge[curvy] node[yshift=1.3cm,text width=3cm,align=center]{{ending in at least $N$\\ $\s{0}$-transitions}} (q0);
+		\draw (q0) edge node[above]{\lb{0}{w_0}} (q1);
+		\draw (q1) edge node[right,xshift=0.2cm]{\lb{0}{w_1}} (q2);
+		\draw (q2) edge[curvy] node[yshift=0.6cm]{only $\s{0}$-transitions} (ql-1);
+		\draw (ql-1) edge node[right,xshift=0.2cm]{\lb{0}{w_{l-1}}} (q0);
+	\end{tikzpicture}
+	\caption{Illustration of a zero loop. The states $(q_0,...,q_{l-1})$ form a zero loop. }\label{fig:zero_loop}
+\end{figure}
+
+We first notice that, after reading more than $\abs{Q}$ zeros, any FST will be in a zero loop. 
+
+\begin{proposition}\label{exists_zero_loop}
+	Let $T:=(Q,q_s,\delta,\lambda)$ be a FST. Then for all $w\in\2,\;q\in Q$ and whenever $n > \abs{Q}$ we have
+	$\delta(q,w\cdot \s{0}^{n})\in Z$ for some zero loop $Z$.
+	\begin{proof}
+		Without loss of generality, assume $w=\epsilon$ because we can replace $q$ with $q_w := \delta(q,w)$.
+		By the pigeonhole principle, and because $n > \abs{Q}$, we have that some state, say $q_r\in Q$, has been visited twice. Thus $q_r = \delta(q,\s{0}^r) = \delta(q,\s{0}^{r+l})$ for some $r,l\geq 0$ with $r+l<n$. Given $r$, we can choose $l$ to be the minimal number for which there is a state repetition. Then $Z = (q_r,\delta(q_r,\s{0}),\delta(q_r,\s{0}^2),...,\delta(q_r,\s{0}^{l-1}))$ is a zero loop, and $\delta(q,\s{0}^{n})\in Z$.
+	\end{proof}
+
+\end{proposition}
+
+Next, we show some simple properties of zero loops. One can visualise them using \cref{fig:zero_loop}.
+\begin{proposition}{Properties of zero loops.}\label{zloop_props}\\
+	Let $T :=(Q,q_s,\delta,\lambda)$ be a FST.
+	Let $Z := (q_0,q_1,...,q_{l-1})$ be a zero loop with length $l>0$.
+	Let $t \geq 0$ and $w \in \2$.
+	\begin{enumerate}
+		\item For any $q_i \in Z$ we have $\delta(q_i,\s{0}^{l*t})=q_i$. \label{zloops_props.0}
+		\item For any $q_i \in Z$ we have $\lambda(q_i,\s{0}^{l*t})=(\lambda(q_i,\s{0}^l))^t$. \label{zloops_props.1}
+		\item For any $q\in Q$ we have $\delta(q,w\cdot \s{0}^{n+Z(T)*t})=\delta(q,w\cdot\s{0}^{n})$ when $n > \abs{Q}$. \label{zloop_props.3}
+		\item For any $q\in Q$ we have $\lambda(q,w\cdot \s{0}^{n+Z(T)*t})=\lambda(q,w\cdot \s{0}^{n})\cdot(\lambda(q_r,\s{0}^{l'}))^{t*k}$ for some $q_r \in Q$ and some $k,l'>0$, when $n > \abs{Q}$. \label{zloop_props.4}
+	\end{enumerate}
+
+	\begin{proof}\hfill
+	\begin{enumerate}
+		\item Let $q_i \in Z$. Then we know that $\delta(q_i,\s{0})=q_{i+1}$ when $i<l-1$ and $\delta(q_{l-1},\s{0})=q_{0}$. So after reading $l$ zeros, we are back in the same state: $\delta(q_i,\s{0}^{l})=q_i$. It is obvious that repeating this $t$ times yields the result. We will, however, show that this can be proven more formal by means of induction on $t$. If $t=0$, then $\delta(q_i,\s{0}^{l*0})=\delta(q_i,\epsilon)=q_i$. If we assume that $\delta(q_i,\s{0}^{l*(t-1)})=q_i$ (IH). Then we see that $\delta(q_i,\s{0}^{l*t})=\delta(q_i,\s{0}^{l*(t-1)+l})=\delta(\delta(q_i,\s{0}^{l*(t-1)}),\s{0}^{l})\overset{IH}{=}\delta(q_i,\s{0}^{l})=q_i$.
+		\item Let $q_i\in Z$. We can use \cref{zloops_props.0} and see that:
+		\begin{gather*}
+		\lambda(q_i,\s{0}^{l*t})= 
+		\lambda(q_i,\s{0}^l)\cdot\lambda(\delta(q_i,\s{0}^l),\s{0}^l)\cdot...\cdot \lambda(\delta( q_i,\s{0}^{l*(t-1)}),\s{0}^l) = \\
+		\underbrace{\lambda(q_i,\s{0}^l)\cdot\lambda(q_i,\s{0}^l)\cdot...\cdot \lambda(q_i,\s{0}^l)}_{t \text{ times}} = 
+		(\lambda(q_i,\s{0}^l))^t
+		\end{gather*}
+		\item Let $q\in Q$. Then by \cref{exists_zero_loop} we know that $q_i := \delta(q,w\cdot \s{0}^{n})\in Z$ for some zero loop $Z$ with length $l$. By \cref{def_zero_loop} we know $Z(T)=l*k$ for some $k>0$ and by \cref{zloops_props.0} we have $\delta(q_i,\s{0}^{l*(k*t)})=q_i$. Thus $\delta(q,w\cdot\s{0}^{n+Z(T)*t})=\delta(q,w\cdot\s{0}^{n+l*(k*t)})=\delta(\delta(q,w\cdot\s{0}^{n}),\s{0}^{l*(k*t)})=\delta(q,w\cdot\s{0}^{n})$.
+		\item Let $q\in Q$. By \cref{exists_zero_loop} we know that $q_r := \delta(q,w\cdot \s{0}^{n})\in Z$ for some zero loop $Z$ with length $l'$. We know that $Z(T) = k*l'$ for some $k>0$. Then by \cref{zloops_props.1} we have:
+		\begin{align*}
+			\lambda(q,w\cdot \s{0}^{n+Z(T)*t})=
+			\lambda(q,w\cdot \s{0}^{n})\cdot\lambda(\delta(q,w\cdot \s{0}^{n}),\s{0}^{Z(T)*t})= \\
+			\lambda(q,w\cdot \s{0}^{n})\cdot\lambda(q_r,\s{0}^{l'*(t*k)})=
+			\lambda(q,w\cdot \s{0}^{n})\cdot(\lambda(q_r,\s{0}^{l'}))^{t*k}
+		\end{align*}
+	\end{enumerate}
+	\end{proof}
+\end{proposition}
+
+After reading $\abs{Q}$ zeros, a FST must be in a state repetition, so that we have entered a zero loop. Call the first repeated state $q_r$. If we continue reading more zeros, we remain in this loop. If we read $Z(T)$ more zeros, we are once again in state $q_r$. This idea resembles the pumping lemma for regular languages \cite{10.1145/990524.990528}.
+
+\begin{lemma}[\cite{streams:degrees:squares:2015}]{FST pumping lemma.}\label{fst_pumping_lemma}\\
+	Let $T=(Q,q_s,\delta,\lambda)$ be a FST.
+	For all $t\geq 0,\;q\in Q,\;n\geq \abs{Q}$ we have $\delta(q,\s{10}^{n+t*Z(T)})=\delta(q,\s{10}^{n})$ and $\lambda(q,\s{10}^{n+t*Z(T)})=xy^t$ for some words $x,y\in\2$.
+	\begin{proof}
+		Because $n>\abs{Q}$ we have by \cref{zloop_props}.\ref{zloop_props.3} that 
+		$\delta(q,\s{10}^{n+t*Z(T)})=\delta(q,\s{10}^{n})$\\
+		Furthermore, by \cref{zloop_props}.\ref{zloop_props.4} we have that:
+		$$\lambda(q,\s{10}^{n+t*Z(T)})=\lambda(q,\s{10}^{n})\cdot(\lambda(q_i,\s{0}^{l}))^{kt}=\lambda(q,\s{10}^{n})\cdot((\lambda(q_i,\s{0}^{l})^k))^{t}=xy^t$$
+		where $x := \lambda(q,\s{10}^{n})$ and $y := (\lambda(q_i,\s{0}^{l}))^k$ for some $k,l>0$ and $q_r\in Q$.
+	\end{proof}
+\end{lemma}

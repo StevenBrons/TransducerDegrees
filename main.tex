@@ -1,0 +1,75 @@
+\documentclass{sthesis}
+\graphicspath{ {images/}{../images/}}
+
+% Biblatex
+\usepackage[style=trad-abbrv,sorting=none,sortcites=true]{biblatex}
+\addbibresource{references.bib}
+
+\usepackage{tocloft}
+\addtolength{\cftchapnumwidth}{6pt}
+
+\widowpenalty10000
+\clubpenalty10000
+
+\begin{document}
+	\input{titlepage}
+	\begin{abstract}
+		We explore the structure of transducer degrees. This is a partial order on infinite sequences known as streams. One stream $\sigma$ is considered to be greater than another stream $\tau$ if there exists a finite state transducer (FST) that transduces $\sigma$ to $\tau$. We show properties of this order and show what techniques were used to prove these properties. Our main focus is the fact that the degree of $\fs{n^2}=\s{10}^0\s{10}^1\s{10}^4\s{10}^9\s{10}^{16}\s{...}$ is an atom. This means that all transducts of $\fs{n^2}$ can be transduced back to $\fs{n^2}$ or to the zero stream $\0$.
+	\end{abstract}
+		
+	\tableofcontents
+
+	\begin{align*}
+		&f: \N \to \N\\
+		&\fs{f} := \prod_{i=0}^{\infty}\s{10}^{f(i)} = \s{10}^{f(0)}\s{10}^{f(1)}\s{10}^{f(0)}\s{10}^{f(2)}\s{...}
+		% \sigma = w\cdot  \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} x_j \cdot y_j^{\phi(i,j)}\\
+		% \sigma \equiv \prod_{i=0}^{\infty}\prod_{j=0}^{l'-1}\s{10}^{\phi'(i,j)}\\
+		% \sigma \equiv \fs{\weight\oplus(\mass\otimes \shift{k}{f})}\\
+		% \gtrdot\\
+		% \sigma = w \cdot x_0y_0^{\phi(0,0)}x_1y_1^{\phi(0,1)}x_0y_0^{\phi(1,0)}x_1y_1^{\phi(1,1)}...
+	\end{align*}
+
+
+	\chapter{Introduction}
+		\subfile{chapters/introduction}
+
+	\chapter{Preliminaries}
+		\subfile{chapters/preliminaries/prerequisites}
+
+	\newcommand{\sectionbreak}{\clearpage}
+
+	% \chapter{Definitions}
+	% 	\label{chap1}
+	% 	\subfile{chapters/definitions/stream_definitions}
+	% 	\subfile{chapters/definitions/fst_definitions}
+	% 	\subfile{chapters/definitions/transducer_degrees}
+
+	% \chapter{Initial investigation}
+	% 	\label{chap2}
+	% 	\subfile{chapters/initial_investigation/basics}
+	% 	% \subfile{chapters/initial_investigation/equivalent_transducers}
+	% 	\subfile{chapters/initial_investigation/funcition_streams}
+	% 	\subfile{chapters/initial_investigation/upper_bounds}
+	% 	\subfile{chapters/initial_investigation/atoms}
+
+	% \chapter{Exploring transducts}
+	% 	\label{chap3}
+	% 	\subfile{chapters/exploring_transducts/spiralling_functions}
+		% \subfile{chapters/exploring_transducts/fst_pumping_lemma}
+		% \subfile{chapters/exploring_transducts/spiralling_transducts}
+	% 	\subfile{chapters/exploring_transducts/transduction_ambiguities}
+	% 	\subfile{chapters/exploring_transducts/mass_products}
+
+	% \chapter{Deep results}
+	% 	\label{chap4}
+	% 	\subfile{chapters/deep_results/n2_atom}
+	% 	\subfile{chapters/deep_results/polynomial_atoms.tex}
+	% 	\subfile{chapters/deep_results/suprema_and_infima}
+		
+	% 	\renewcommand{\sectionbreak}{}
+
+	% 	\chapter{Conclusion and future work}
+	% 		\subfile{chapters/conclusion}
+	\nocite{*}
+	\printbibliography[title={References}]
+\end{document}

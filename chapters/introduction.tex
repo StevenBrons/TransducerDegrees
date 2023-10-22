@@ -1,0 +1,71 @@
+\section*{Ordering streams}
+
+In this thesis, we explore the structure of \textit{transducer degrees}. This is a largely unexplored topic in the field of theoretical computing science and automata theory. The concept was first introduced by \textit{Jörg Endrullis} and his coworkers in the paper \textit{Degrees of Streams} \cite{streams:degrees:2011}.
+\vspace{1em}
+
+Transducer degrees are a way to order infinite sequences, also known as \textit{streams}. Some streams can be transformed into other streams by a \textit{finite state transducer} (FST). This is a kind of automaton that reads symbols from one stream and outputs symbols to a new stream. See the figure below.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\node[state,initial] (q_0) {$q_0$};
+		\node[state,right of=q_0] (q_1) {$q_1$};
+		\draw (q_0) edge[bend left] node[above] {\lb{1}{101}} (q_1);
+		\draw (q_0) edge[bend right] node[below] {\lb{0}{010}} (q_1);
+		\draw (q_1) edge[loop right,looseness=15] node[right,xshift=2,yshift=-5]{\lb{1}{11}} node[right,xshift=2,yshift=5]{\lb{0}{1}} (q_1);
+	\end{tikzpicture}
+	\caption*{An example of a FST}
+	\label{fig:first_trans}
+\end{figure}
+
+The state transitions can be read as ``\lb{\text{input}}{\texttt{output}}''. We will demonstrate how this FST produces an output stream from an input stream. In the beginning, the FST will be in state $q_0$, because this is the initial state (indicated by the arrow left of $q_0$). If we have a stream, for example, the alternating stream $A := \s{10101010...}$, this FST will read the first symbol ($\s{1}$) and output $\s{101}$ and change the current state from $q_0$ to $q_1$. It will then read the second symbol ($\s{0}$), output $\s{1}$ and change the state from $q_1$ to $q_1$ (so the state stays the same). Next, it will read the third symbol ($\s{1}$) and output $\s{11}$, and again keep in the same state. This process continues forever. The resulting output stream $O$ looks like $O = \s{101111111...}$.
+\vspace{1em}
+
+Notice that we always read one symbol per transition, but can output multiple symbols at once. We call the act of transforming one stream into another using a FST \textit{transduction}. Furthermore, the \textit{transducts} of a stream $\sigma$ are all streams that can be generated from $\sigma$ by some FST. So the stream $O$ above is one of the transducts of $A$.
+\vspace{1em}
+
+We can order all streams using these transducers. We say that one stream $\sigma$ is ``bigger'' than another stream $\tau$ if we can construct a FST that transduces $\sigma$ to $\tau$. Some streams can be transduced to each other. Whenever this is the case, we call the streams equivalent. Transducer degrees are the ordering of all streams where we treat equivalent streams as ``the same''. We call a set of equivalent streams a \textit{transducer degree} and their collection \textit{transducer degrees}.
+\vspace{1em}
+
+\section*{Related work}
+
+These transducer degrees are similar to the well-known concept of \textit{Turing degrees} also known as \textit{degrees of unsolvability} \cite{ENDERTON1977527, sasso_1975}. Their similarity is the topic of the paper \textit{Degrees of Transducibility} \cite{streams:degrees:transducibility:2015}. This paper also compares \textit{Mealy Degrees}, the degrees produced by \textit{Mealy Machines}. These are finite state transducers that only output a single symbol per transition. This structure is the topic of \cite{ITA_2008__42_3_451_0}. 
+\vspace{1em}
+
+Transducer degrees are created to gain more insight into the relation of streams. We know for example that the famous Thue-Morse stream can be transduced to the period doubling stream. The definition of these streams are given in \cref{well_known_streams} and a FST that can be used to transduce the Thue-Morse stream to the period doubling stream can be found in \cref{thue_morse_fst}. It is argued that finite state transducers are a natural way to compare the complexity of different streams \cite{streams:degrees:2011}.
+\vspace{1em}
+
+There are still a lot of open questions concerning transducer degrees as listed on the excellent website \cite{websiteofjeorg}. This website also gives a nice overview of papers related to this topic and the current state of the research. We highly encourage the reader to visit this site at:
+\begin{center}
+	\url{http://joerg.endrullis.de/research/finite-state-transducers/}
+\end{center}
+We will go over some of the open questions in the last chapter.
+\vspace{1em}
+
+It is also possible to look at \textit{permutation transducers}. These are similar machines to FSTs but with an additional requirement on the state transitions. In a FST, each state must have a transition that reads each input symbol. You cannot have a situation where you can get ``stuck''. A permutation transducer also requires that each state has incoming transitions for each input symbol. The example FST given above is not a permutation transducer, because the state $q_0$ does not have any incoming transitions. The properties of these permutation transducers have been studied in the paper \textit{Classifying Non-periodic Sequences by Permutation Transducers} \cite{10.1007/978-3-319-62809-7_28}.
+
+\newpage
+\section*{Research question}
+
+In this thesis we will be looking at the question:
+\begin{center}
+	What are the properties of transducer degrees?
+\end{center}
+To answer this question, we will delve into the work of \textit{Jörg Endrullis}; the authority on this topic. We will explore the fine details of the proofs given in the papers written by him and his coworkers \cite{streams:degrees:2011,streams:degrees:suprema:2020,streams:degrees:squares:2015}. Some properties that we explore are:
+\begin{itemize}
+	\item There exists a \textit{bottom degree}.
+	\item Every countable set of degrees has an \textit{upper bound}.
+	\item There are countably many \textit{atom degrees}, these are degrees that only have the bottom degree below them.
+	\item There are sets of degrees that do not have a \textit{supremum}.
+\end{itemize}
+We fill focus mostly on the fact that a particular degree of streams is an atom namely, the degree of $\fs{n^2}$. 
+
+\section*{Thesis overview}
+
+We will briefly go over the contents of each chapter. 
+\begin{description}
+	\item[\cref{chap1}: \nameref{chap1}] We give some definitions that we will use throughout this thesis. We give examples and make the reader familiar with the notation.
+	\item[\cref{chap2}: \nameref{chap2}] We prove some simple facts about transducer degrees. We solidify a few claims that were made in this introduction and prove a number of elementary facts.
+	\item[\cref{chap3}: \nameref{chap3}] We look at the transducts of a certain class of streams, namely, those generated by spiralling functions. We work towards an elegant way to describe these transducts.
+	\item[\cref{chap4}: \nameref{chap4}] We show some facts that are more difficult to prove. We will be using the results derived in \cref{chap3} to show that the degree of the stream $\fs{n^2}$ is an atom. We quickly go over the fact that the transducer degrees do not possess the supremum property.
+\end{description}

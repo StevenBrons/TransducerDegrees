@@ -1,0 +1,56 @@
+\section{Finite state transducers}
+
+\begin{definition}{Finite state transducer (FST).}\\
+	A finite state transducer (FST) is a tuple $(Q,q_s,
+	\delta,\lambda)$ where
+	\begin{itemize}
+		\item $Q$ is a set of states.
+		\item $q_s$ is the initial state.
+		\item $\delta: Q \times \mathbf{2} \to Q$ the transition function.
+		\item $\lambda: Q \times \mathbf{2} \to \2$ the output function.
+	\end{itemize}
+\end{definition}
+
+\begin{definition}
+	We extend the definition of the input function $\delta$ and output function $\lambda$ of a FST $T := (Q,q_s,\delta, \lambda)$ such that we can give a word or a stream as input. Let $\sigma\in\streams\cup\2$ be a stream or a word.
+	\begin{align*}
+		\delta(q,\epsilon) &:= q & \delta(q,s : \sigma) &= \delta(\delta(q,s),\sigma)\\
+		\lambda(q,\epsilon) &:= q & \lambda(q,s : \sigma) &= \lambda(q,s) : \lambda(\delta(q,s),\sigma)
+	\end{align*}
+	We say that a transducer $T$ \textit{transduces} a stream $\sigma\in\streams$ to $\tau\in\streams$ if $\lambda(q_s,\sigma) = \tau$. We write $\sigma \geq_{T} \tau$ and $T(\sigma) = \tau$.
+\end{definition}
+
+The best way to get familiar with this definition is by looking at an example.
+
+\begin{example}\label{thue_morse_fst}
+	We define a finite state transducer $T := (Q,q_s,\delta,\lambda)$ where $Q := \{q_s,q_0,q_1\}$ is the set of states, $q_s$ is the initial state and the transition and output functions $\delta,\lambda$ are defined by:
+	\begin{align*}
+		\delta(q_s,\s{0}) &:= q_0 & \lambda(q_s,\s{0}) &:= \epsilon \\
+		\delta(q_s,\s{1}) &:= q_1 & \lambda(q_s,\s{1}) &:= \epsilon \\
+		\delta(q_0,\s{0}) &:= q_0 & \lambda(q_0,\s{0}) &:= \s{0} \\
+		\delta(q_0,\s{1}) &:= q_1 & \lambda(q_0,\s{1}) &:= \s{1} \\
+		\delta(q_1,\s{0}) &:= q_0 & \lambda(q_1,\s{0}) &:= \s{1} \\
+		\delta(q_1,\s{1}) &:= q_1 & \lambda(q_1,\s{1}) &:= \s{0}
+	\end{align*}
+	This transducer is visualised below in \cref{fst_M_to_PD}. This particular FST transduces the Thue-Morse stream (M) to the period doubling stream (PD) defined in \cref{well_known_streams} 
+
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\node[state,initial] (q_0) at (0,0) {$q_s$};
+			\node[state] (q_1) at (3,1) {$q_0$};
+			\node[state] (q_2) at (3,-1) {$q_1$};
+			\draw (q_0) edge node[above] {\lb{0}{\epsilon}} (q_1);
+			\draw (q_0) edge node[below] {\lb{1}{\epsilon}} (q_2);
+			\draw (q_1) edge[loop right] node[right,xshift=2] {\lb{0}{\s{0}}} (q_1);
+			\draw (q_2) edge[loop right] node[right,xshift=2] {\lb{1}{\s{0}}} (q_2);
+			\draw (q_1) edge[bend left] node[right,xshift=2] {\lb{1}{\s{1}}} (q_2);
+			\draw (q_2) edge[bend left] node[left,xshift=-2] {\lb{0}{\s{1}}} (q_1);
+		\end{tikzpicture}
+		\caption{A FST that transduces the Thue-Morse stream (M) to the period doubling stream (PD).}
+		\label{fst_M_to_PD}
+	\end{figure}
+
+	The period doubling stream can be generated from the Thue-Morse stream by iterating through every symbol (starting with the second symbol), and checking if it is equal to the previous symbol. If so, output a \s{0}, otherwise ouput a \s{1}. One can consider state $q_0$ to be ``the last symbol was a \s{0}'' and $q_1$ ``the last symbol was a \s{1}''.
+
+\end{example}

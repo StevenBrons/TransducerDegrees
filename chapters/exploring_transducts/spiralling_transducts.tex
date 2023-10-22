@@ -1,0 +1,227 @@
+\documentclass[../main.tex]{subfiles}
+
+% \begin{document}
+
+\section{Transducts of spiralling function streams.}
+
+\begin{definition}{Block loop.}\\
+	Let $T:=(Q,q_s,\delta,\lambda)$ be a FST.\\
+	A \textit{block loop} $B$ of a function $f$ and a FST is a sequence of states $B := (q_0,q_1,...,q_{l-1})$ for $l>0$, such that for some $N\geq 0$ and any $m \geq 0$:
+	\begin{align}
+		\delta(q_i,\fs{f(N+i+l*m)}) &=q_{i+1} \qquad (\text{for all } i < l - 1)\label{def_block_loop.prop1} \\
+		\delta(q_{l-1},\fs{f(N+l-1+l*m)}) &=q_0 \label{def_block_loop.prop2}
+	\end{align}
+	We call $l$ the \textit{length} of the block loop and $N$ the \textit{start index} of the block loop.
+	\label{def_block_loop}
+\end{definition}
+
+One can visualize block loops like zero loops, except that the transitions between states of the loop are caused by reading whole blocks of the function stream $\fs{f}$ instead of single symbols. We also allow state repetitions in block loops. An important thing to note is that the existence of block loops depends not only on the FST but also on the function $f$. Notice that the factor $m\geq 0$ is necessary. Without this, one cannot guarantee that the transitions between states of the block loop remain the same in the second and higher iterations of the loop! See \cref{fig:block_loop} for an illustration of a block loop.
+
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}[node distance=2cm]
+		\node[state, initial] (qs) {$q_s$};
+		\node[state, right of=qs, node distance=4cm] (q0)  {$q_0$};
+		\node[block, right of=q0, node distance=2.5cm] (b0) {$\fs{f(N)}$};
+		\node[state, right of=b0, node distance=2.5cm] (q1)  {$q_1$};
+		\node[block, above of=q1] (b1) {$\fs{f(N+1)}$};
+		\node[state, above of=b1] (q2)  {$q_2$};
+		\node[block, above of=q0] (bl-1)  {$\fs{f(N+l-1)}$};
+		\node[state, above of=bl-1] (q3)  {$q_{l-1}$};
+
+		% \node[state, above of=q1] (q2) {$q_2$};
+		% \node[state, above of=q0] (ql-1) {$q_{l-1}$};
+
+		\draw (qs) edge[curvy] (q0);
+		\draw (q0) edge (b0);
+		\draw (b0) edge (q1);
+		\draw (q1) edge (b1);
+		\draw (b1) edge (q2);
+		\draw (q2) edge[curvy] node[yshift=0.6cm]{$\bs{N+n}{2}{l-1}$} (q3);
+		\draw (q3) edge (bl-1);
+		\draw (bl-1) edge (q0);
+	\end{tikzpicture}
+	\caption{Illustration of the first iteration of a block loop. The states $(q_0,...,q_{l-1})$ form a block loop. }\label{fig:block_loop}
+\end{figure}
+
+\begin{lemma}\label{exists_block_loop}
+	Let $T=(Q,q_s,\delta,\lambda)$ be a FST. Let $f\in\spir[\N]$.
+	Then there exists a block loop $B=(q_0,q_1,...,q_{l-1})$ of length $l$ with start index $N$. Moreover, $q_0 = \delta(q_s,\bs{n}{0}{N})$ and for all $i\geq0,\; n\geq N$ we have $f(n + li) \equiv f(n) \mod Z(T)$.
+	\begin{proof}
+		Because $f$ is spiralling, we know that there are $N_{\text{limit}},\; N_{\text{periodic}}\geq 0,\; p>0$ such that:
+		\begin{align}
+			f(n) &\geq \abs{Q} \qquad &(\text{for all } n&\geq N_{\text{limit}}) \\
+			f(n+p) &\equiv f(n) \mod Z(T) &\qquad (\text{for all } n&\geq N_{\text{periodic}}) \label{exists_block_loop.periodic}
+		\end{align}
+
+		\newcommand{\YY}[1]{s_{#1}}
+
+		Let $\YY{m} \in Q$ be shorthand for $\YY{m} := \delta(q_s,\bs{n}{0}{m})$. This is the state that $T$ is in before reading the $m$-th occurrence of a one: the start of the $m$-th block.
+		
+		By the pigeonhole principle, we can find $N\geq \max(N_{\text{limit}},\; N_{\text{periodic}}),\; b>0$ such that $\YY{N+p*b}=\YY{N}$.
+
+		We claim that $B=(\YY{N},\YY{N+1},...,\YY{N+pb-1})$ is a block loop of length $b$.
+		
+		Notice that by \cref{exists_block_loop.periodic} we have that for any $m\geq0$ and for some $k\geq 0$:
+		\begin{align}
+			f(n+pb*m) = f(n)+k*Z(T) \qquad \forall n\geq N \label{exists_block_loop.periodic2}
+		\end{align}
+
+		We will show \cref{def_block_loop.prop1}. Let $m\geq0$ then, by \cref{fst_pumping_lemma} we have for all $b\geq 0$ and $\YY{N+i}\in B$ that:
+
+		\begin{align}
+			\delta(\YY{N+i},\fs{f(N+i+pb*m)}) &=
+			\delta(\YY{N+i},\s{10}^{f(N+i+pb*m)}) \overset{\ref{exists_block_loop.periodic2}}{=} \nonumber\\
+			\delta(\YY{N+i},\s{10}^{f(N+i)+k*Z(T)}) &\overset{\ref{fst_pumping_lemma}}{=} \label{exists_block_loop.pf1}
+			\delta(\YY{N+i},\s{10}^{f(N+i)}) = \\
+			\delta(\YY{N+i},\fs{f(N+i)}) &= \nonumber
+			\YY{N+i+1}
+		\end{align}
+
+		The last equality follows from the definition of $s_m$.
+		We can thus see that, when reading blocks of a spiralling function, the transitions between the blocks remain the same from some point on, due to \cref{fst_pumping_lemma}.
+		\Cref{def_block_loop.prop2} follows directly from \cref{exists_block_loop.pf1} and the fact that $s_{N+p*b}=s_N$.
+		\begin{align*}
+			\delta(\YY{N+pb-1},\fs{f(N+pb-1+pb*m)}) &\overset{\ref{exists_block_loop.pf1}}{=} s_{N+pb} = s_{N}
+		\end{align*}
+
+	\end{proof}
+\end{lemma}
+
+\begin{theorem}[\cite{streams:degrees:squares:2015}]{Transducts of spiralling function streams.}\label{trans_spir}\\
+	Let $f \in \spir[\N]$. Then $\fs{f} \geq \sigma$ if and only if 
+	\begin{align*}
+		\sigma &= w\cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} x_j \cdot y_j^{\phi(i,j)}
+		\qquad \text{ where } \qquad
+		\phi(i,j) := \frac{f(N + li + j) - a_j}{z} \in\N
+	\end{align*}
+	where we have $N\geq0,\; z,l>0$, a list of numbers $(a_j)_{j=0}^{l-1}\in\N^{l}$, a word $w\in\2$ and lists of words $(x_j)_{j=0}^{l-1},(y_j)_{j=0}^{l-1}\in(\2)^{l}$.
+	\begin{proof}{$(\implies)$}
+		If $\fs{f}\geq \sigma$ then $\fs{f}\geq_T \sigma$, by some transducer $T :=(Q,q_s,\delta,\lambda)$.
+		By \cref{exists_block_loop} we know that there exists a block loop $B:=(q_0,q_1,...,q_{l-1})$ with start index $N$ and length $l$ such that:
+		\begin{align}
+			q_0&=\delta(q_s,\bs{n}{0}{N}) \\
+			f(n + li) &\equiv f(n) \mod Z(T) \qquad (\text{for all } i\geq0,\; n\geq N) \label{trans_spir.pf0}
+		\end{align}
+		We first rewrite $\sigma$. Note that we only apply the definition of a function stream and the definition of the output funciton $\lambda$. At $(*)$ we use the definition of a block loop.
+		\begin{equation}
+			\begin{gathered}
+				\sigma = \prod_{i=0}^{\infty} \lambda(\delta(q_s,\bs{n}{0}{i}), \s{10}^{f(i)}) = \\
+				\lambda(q_s,\bs{n}{0}{N})\cdot \prod_{i=0}^{\infty} \lambda(q_0,\bs{N+il+n}{0}{l}) =  \\
+				w \cdot \prod_{i=0}^{\infty}\lambda(q_0,\prod_{j=0}^{l-1}\s{10}^{f(N+il+j)}) \overset{(*)}{=}  \\
+				w \cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1}\lambda(q_{j},\s{10}^{f(N+il+j)})  \\
+				\text{where } w:=\lambda(q_s,\bs{n}{0}{N})
+			\end{gathered}
+			\label{trans_spir.pf11}
+		\end{equation}
+		
+
+		Define $a_j := \min\set{f(N+il+j)}{i\geq0}$. Then:
+		\begin{align}
+			f(N+il+j) \geq a_j \qquad  (\text{for all } i\geq0 \text{ and } j<l) \label{trans_spir.pf1}
+		\end{align}
+
+		Let $z := Z(T)$. We write $f(N+il+j)$ into another form by using \cref{trans_spir.pf0}:
+		\begin{align*}
+			f(N+il+j) &\equiv a_j \mod Z(T) &\implies \\
+			f(N+il+j) &= a_j + k_{i,j}*Z(T) \text{ for some } k_{i,j}\in\N &\implies \\
+			k_{i,j}*Z(T) &= f(N+il+j) - a_j &\implies \\
+			k_{i,j} &= \frac{f(N+il+j) - a_j}{Z(T)} &\implies \\
+			k_{i,j} &= \frac{f(N+il+j) - a_j}{z}  =: \phi(i,j)
+		\end{align*}
+		Notice that $k_{i,j}\in\N$ instead of $k_{i,j}\in\Z$ because of \cref{trans_spir.pf1}.
+
+		Then we finally have by the FST pumping lemma (\ref{fst_pumping_lemma}) that:
+
+		\begin{gather*}
+			\sigma \overset{\ref{trans_spir.pf11}}{=} w \cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1}\lambda(q_{j},\s{10}^{f(N+il+j)}) = w \cdot \prod_{i=0}^{\infty}\prod_{m}^{l-1}\lambda(q_{j},\s{10}^{a_j+k_{i,j}*Z(T)}) = \\
+		w \cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1}\lambda(q_{j},\s{10}^{a_j + \phi(i,j)*Z(T)}) \overset{\ref{fst_pumping_lemma}}{=}
+			w \cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1}x_jy_j^{\phi(i,j)}
+		\end{gather*}
+
+
+
+	$(\impliedby)$
+		Let $\sigma := w\cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} x_j \cdot y_j^{\phi(i,j)}$ where $\phi(i,j)$ is of the form described above, so we have a list of numbers $(a_j)_{j=0}^{l-1} \in \Z^{l}$, a number $N\geq0$ and a number $z>0$. Futhermore, $(x_j)_{j=0}^{l-1},(y_j)_{j=0}^{l-1}\in(\2)^l$ are lists of words and $w\in\2$ is a word. 
+		We want to show that $\fs{f} \geq w\cdot \prod_{i=0}^{\infty}\prod_{j=0}^{m} x_j \cdot y_j^{\phi(i,j)}$. We do this in several steps:
+		\begin{enumerate}
+			\item $\fs{f} \geq \fs{n \mapsto f(N+n)}$\\
+			by \cref{simple_fs_facts}.\ref{simple_fs_facts.shift}
+			\item $\fs{n \mapsto f(N+n)} \geq \fs{n \mapsto f(N + n) - a_{n \mod l}}$\\
+			Let $j := n \mod l$.
+			We want to show that we can find a transducer that removes $a_j$ zeros from the $j$-th block.
+			Define $T := (Q, q_{l-1}^{0}, \delta, \lambda)$. Let $Q := \set{q_{j,h}}{j < l,h\leq a_j}$. Define for all $j<l$, the transition and output functions as follows:
+			\begin{align*}
+				\delta(q_{j,0}, \s{0}) &:= q_{j,0} & \lambda(q_{j,0}, \s{0}) &:= \s{0}\\
+				\delta(q_{j,0}, \s{1}) &:= q_{(j+1 \mod l),a_j} & \lambda(q_{j,0}, \s{1}) &:= \s{1} \\
+				\delta(q_{j,h}, \s{0}) &:= q_{j,h-1} & \lambda(q_{j,0}, \s{0}) &:= \epsilon & (\text{for all}\;0 < h \leq a_j)\\
+			\end{align*}
+			Note that this partial description is sufficient, because we assume that $\fs{n \mapsto f(N+n)}$ is given as input. See \cref{trans_spir.pf3} for an illustration.
+
+			\begin{figure}[H]
+				\centering
+				\begin{tikzpicture}[node distance=2cm]
+					\tikzset{every loop/.style={min distance=10mm, looseness=10}}
+					\node[state, initial, initial where=above] (qM;0) {$q_{M,0}$};
+					\node[state, right of = qM;0] (qM;1) {$q_{M,1}$};
+					\node[state, right of = qM;1] (qM;2) {$q_{M,2}$};
+					\node[state, right of = qM;2, node distance= 4cm] (qM;a_{M}) {$q_{M,a_{M}}$};
+
+					\draw (qM;1) edge node[above]{\lb{0}{\epsilon}} (qM;0);
+					\draw (qM;2) edge node[above]{\lb{0}{\epsilon}} (qM;1);
+					\draw (qM;a_{M}) edge[curvy] (qM;2);
+
+					\node[state, below of = qM;0, node distance= 3cm] (q1;0) {$q_{1,0}$};
+					\node[state, right of = q1;0] (q1;1) {$q_{1,1}$};
+					\node[state, right of = q1;1] (q1;2) {$q_{1,2}$};
+					\node[state, right of = q1;2, node distance= 4cm] (q1;a_{1}) {$q_{1,a_{1}}$};
+
+					\draw (q1;1) edge node[above]{\lb{0}{\epsilon}} (q1;0);
+					\draw (q1;2) edge node[above]{\lb{0}{\epsilon}} (q1;1);
+					\draw (q1;a_{1}) edge[curvy] (q1;2);
+					\draw[dashed] (q1;0) -| +(0,1) -| (qM;a_{M});
+
+					\node[state, below of = q1;0] (q0;0) {$q_{0,0}$};
+					\node[state, right of = q0;0] (q0;1) {$q_{0,1}$};
+					\node[state, right of = q0;1] (q0;2) {$q_{0,2}$};
+					\node[state, right of = q0;2, node distance= 4cm] (q0;a_{0}) {$q_{0,a_{0}}$};
+
+					\draw (q0;1) edge node[above]{\lb{0}{\epsilon}} (q0;0);
+					\draw (q0;2) edge node[above]{\lb{0}{\epsilon}} (q0;1);
+					\draw (q0;a_{0}) edge[curvy] (q0;2);
+					\draw (q0;0) -| +(0,1) -| (q1;a_{1});
+
+					\draw (qM;0) edge [loop left] node[xshift=-0.2cm] {\lb{0}{0}} ();
+					\draw (q1;0) edge [loop left] node[xshift=-0.2cm] {\lb{0}{0}} ();
+					\draw (q0;0) edge [loop left] node[xshift=-0.2cm] {\lb{0}{0}} ();
+					\draw (q0;0) -| +(0,1) -| (q1;a_{1});
+
+					\draw (qM;0) -- +(-1,1) -- +(-3,1) |- ($(q0;0) + (-3,-1)$) -- ($(q0;0) + (0,-1)$) -- (q0;0);
+
+					\node[yshift=1.25cm,xshift=1.5cm] at (q0;1) {\lb{1}{\s{1}}};
+					\node[yshift=1.25cm,xshift=1.5cm] at (q1;1) {\lb{1}{\s{1}}};
+					\node[yshift=0.5cm,xshift=-3.5cm] at (q1;0) {\lb{1}{\s{1}}};
+
+				\end{tikzpicture} 
+				\caption{The FST $T$ described above where $M := l-1$.}\label{trans_spir.pf3}
+			\end{figure}
+
+			\item $\fs{n \mapsto f(N + n) - a_{n \mod l}} \geq \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} \s{1}\s{0}^{\phi(i,j)}$
+			We give a derivation below. Note that we only introduce a division by $z$.
+			This is possible by \cref{simple_fs_facts}.\ref{simple_fs_facts.divide}.
+			\begin{align*}
+				\fs{n \mapsto f(N + n) - a_{n \mod l}} &= 
+				\prod_{n=0}^{\infty}\s{1}\s{0}^{f(N + n) - a_{n \mod l}} = \\
+				\prod_{i=0}^{\infty}\prod_{j=0}^{l-1}\s{1}\s{0}^{f(N + i + j) - a_j} &\overset{\ref{simple_fs_facts}.\ref{simple_fs_facts.divide}}{\geq} 
+				\prod_{i=0}^{\infty}\prod_{j=0}^{l-1}\s{1}\s{0}^{\frac{f(N + i + j) - a_j}{z}} = \\
+				\prod_{i=0}^{\infty}&\prod_{j=0}^{l-1}\s{1}\s{0}^{\phi(i,j)}
+			\end{align*}
+			\item $\prod_{i=0}^{\infty}\prod_{j=0}^{l-1} \s{1}\s{0}^{\phi(i,j)} \geq \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} x_j \cdot y_j^{\phi(i,j)}$. We must periodically replace $\s{1}$ by $x_j$ and $\s{0}$ by $y_j$. We give a FST to do this in the proof of \cref{trans_spir_10}.
+			\item $\prod_{i=0}^{\infty}\prod_{j=0}^{l-1} x_j \cdot y_j^{\phi(i,j)} \geq w\cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} x_j \cdot y_j^{\phi(i,j)}$.\\
+			By \cref{basic_ineq}.\ref{basic_ineq.prepend}.
+		\end{enumerate}
+	\end{proof}
+\end{theorem}
+
+% \end{document}

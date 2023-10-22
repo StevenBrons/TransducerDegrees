@@ -1,0 +1,219 @@
+% \documentclass[../main.tex]{subfiles}
+
+In this chapter, we develop techniques to better characterize the transducts of some streams. These techniques were shown in the paper \textit{The degree of squares is an Atom} \cite{streams:degrees:squares:2015}. We will use these techniques to conclude some deeper results about transducer degrees in the next chapter. We will create an elegant form of the transducts of some streams, namely, those created by spiralling functions. We will do this in the following steps:
+\begin{itemize}
+	\item We define the class of spiralling functions.
+	\item We show that, when $f$ is spiralling and $\sigma$ is a transduct of $\fs{f}$ then:
+	$$\sigma = w\cdot \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} x_j \cdot y_j^{\phi(i,j)}$$
+	\item We show that this double product can be simplified to:
+	$$\sigma \equiv \prod_{i=0}^{\infty}\prod_{j=0}^{l-1} \s{1}\s{0}^{\phi(i,j)}$$
+	\item We introduce the concept of \textit{mass products} and \textit{weight displacements} to derive that:
+	$$\sigma \equiv \fs{\weight\oplus(\mass\otimes \shift{k}{f})}$$
+\end{itemize}
+
+The details of this derivation can be found in the next sections. It is good to keep in mind that we are working towards an elegant form to characterize the transducts of some streams.
+
+\section{Properties of spiralling functions}
+We define the class of \textit{spiralling functions} and show some properties. We denote the set of spiralling functions by ``$\;\spir\;$''. This class of functions is useful because we can say a lot about the transducts $\sigma$ of $\fs{f}$ whenever $f$ is spiralling. 
+
+\begin{definition}[\cite{streams:degrees:squares:2015}]\label{def_spir}
+	A function $f: \N \to \N$ is called \textit{spiralling} ($f \in \spir[\N]$) if and only if
+	\begin{enumerate}[(a)]
+		\item For all $m\geq0$ there exists $N\geq 0$ such that
+		$$f(n)\geq m \qquad (\text{for all } n\geq N)$$
+		\label{def_spir.lim}
+		\item For all $m>0$ there exists $N\geq0,\;p>0$ such that
+		$$f(n+p) \equiv f(n) \mod m \qquad (\text{for all } n\geq N)$$
+		\label{def_spir.per}
+	\end{enumerate}
+\end{definition}
+
+This definition states that a function $f$ is spiralling if $\lim_{n\to\infty}f(n)=\infty$ (\ref{def_spir}.\ref{def_spir.lim}) and that, for any $m>0$ the function $n \mapsto f(n) \mod m$ is ultimately periodic (\ref{def_spir}.\ref{def_spir.per}).
+
+We give some examples of spiralling functions, and their straightforward proofs.
+
+\begin{proposition}\hfill\label{spir_func_1}
+	\begin{enumerate}
+		\item $Id_\N\in\spir[\N]$
+		\item $(n \mapsto g^n)\in\spir[\N]$ where $g>1$ 
+	\end{enumerate}
+\begin{proof}
+	\hfill
+	\begin{enumerate}
+		\item 
+		\begin{enumerate}
+			\item Let $m\geq0$, take $N:=m$, then for all $n\geq N$ we have $$Id_\N(n)=n\geq N = m$$
+			\item Let $m>0$, take $N := 0$ an $p := m$, then for all $n\geq N$ we have $$Id_\N(n + m) = n+m \equiv n = Id_\N(n) \mod m$$
+		\end{enumerate}
+		\item 
+		\begin{enumerate}
+			\item Let $m\geq 0$. Then for all $n\geq m$, we have $g^n \geq g^m \geq m$.
+			\item Let $m>0$. By the pigeonhole principle, there exists $a,b>0$ such that $g^{a+b} \equiv g^{a} \mod m$, because there are more than $m$ positive integers, so that $g^{a+b}$ and $g^{a}$ must be equivalent modulo $m$ for some $a,b\geq0$. We choose $p := b$ and $N := a$. For all $n\geq N$, we can write $n = c + a$ for some $c \geq 0$, such that we can derive:
+			\begin{align*}
+				g^{n+p} = 
+				g^{c+a+p} = 
+				g^{c}g^{a+b} \equiv
+				g^{c}g^{a} = 
+				g^{c+a} =
+				g^{n} \mod m
+			\end{align*}
+		\end{enumerate}
+	\end{enumerate}
+\end{proof}
+\end{proposition}
+
+We will now give closure properties of spiralling functions.
+
+\begin{theorem}{Closure properties of $\spir[\N]$.}\label{cp_spir}\\
+Let $f,g\in\spir[\N]$ and $c>0$. Then we have:
+\begin{enumerate}
+	\item $\shift{c}{f}\in\spir[\N]$ \label{cp_shift}
+	\item $c+f\in\spir[\N]$ \label{cp_add_const}
+	\item $c*f\in\spir[\N]$ \label{cp_mult_const}
+	\item $f+g\in\spir[\N]$ \label{cp_add}
+	\item $f*g\in\spir[\N]$ \label{cp_mult}
+\end{enumerate}
+
+\begin{proof}
+\hfill
+\begin{enumerate}
+	\item 
+	\begin{enumerate}
+		\item Because $f$ is spiralling, we can find a number $N\geq0$ such that for all $m\geq 0$ we have for all $n\geq N$ that $f(n) \geq m$. For the shifted function $\shift{c}{f}$ we can take the same number $N\geq0$.
+		\item Here too, we can take the same values $N\geq0$ and $p>0$ that exists because $f$ is spiralling.
+	\end{enumerate}
+	\item The proof is analogous to the proof of property \ref{cp_mult_const}.
+	\item 
+		\begin{enumerate}
+			\item It is well known that, if $\lim_{n\to\infty}f(n)=\infty$ then $\lim_{n\to\infty}f(n)*c=\infty$.
+			\item Let $m>0$, then there exists $p>0,\;N\geq0$ such that for all $n\geq N$ we have $f(n+p) \equiv f(n) \mod m$, but then for the same $p$ and $N$, we have $c*f(n+p) \equiv c*f(n) \mod m$.
+		\end{enumerate}
+	\item The proof is analogous to the proof of property \ref{cp_mult}.
+	\item 
+		\begin{enumerate}
+			\item It is trivial that, if $\lim_{n\to\infty}f(n)=\infty$ and $\lim_{n\to\infty}g(n)=\infty$, then $\lim_{n\to\infty}f(n)*g(n)=\infty$.
+			\item Let $m>0$. Because $f$ and $g$ are spiralling, we can find $p_f,p_g>0$ and $N_f,N_g\geq0$ such that $n\geq N_f $ implies $f(n+p_f) \equiv f(n) \mod m$ and for all $n\geq N_g $ we have $g(n+p_g) \equiv g(n) \mod m$. Take $N:=max(N_f,N_g)$ and $p:=p_f*p_g$, then for all $n\geq N$:
+			\begin{align*}
+				(f*g)(n+p) &= f(n+p)*g(n+p) = \\
+				f(n+p_fp_g)*g(n+p_fp_g) &\equiv f(n)g(n) = (f*g)(n) \mod m \qedhere\\
+			\end{align*}
+		\end{enumerate}
+\end{enumerate}
+\end{proof}
+\end{theorem}
+\begin{theorem}\label{cp_spir_comp}
+Let $f,g\in\spir[\N]$ with $g$ increasing, then $f\circ g\in\spir[\N]$
+\begin{proof}
+	The first property of the definition is a well-known result from analysis. We will focus on the second property:\\
+	\begin{stp}{$\forall m>0\;\exists N\geq0,p>0\;\forall n\geq N\qquad(f\circ g)(n+p) \equiv (f\circ g)(n)\mod m$}
+		Choose any $m>0$.
+		Because $f$ and $g$ are spiralling, we can find $N_f,N_g\geq0$ and $p_f,p_g>0$ such that:
+		\begin{align}
+			\forall n\geq N_f\qquad f(n+p_f) \equiv f(n) \mod m \label{cp_spir_comp.sp_1} \\
+			\forall n\geq N_g\qquad g(n+p_g) \equiv g(n) \mod p_f \label{cp_spir_comp.sp_2}
+		\end{align}
+		Choose $N\geq N_g$ such that $\forall n\geq N [g(n) > N_f]$. 
+		This is possible because $\lim_{n\to\infty}g(n)=\infty$.
+		By \cref{cp_spir_comp.sp_1} we have that for all $n \geq N$ that $f(n+k*p_f) \equiv f(n) \mod m$. \\
+		By \cref{cp_spir_comp.sp_2} we have that for all $n\geq N_g$ that $g(n+p_g) \equiv g(n) + k*p_f$ for some $k\geq 0$.
+		If we combine this, we get the required result for $n\geq \max(N,N_g)$:
+		$$(f\circ g)(n + p_g) = f(g(n+p_g)) = f(g(n)+k*p_f) \equiv f(g(n)) = (f\circ g)(n) \mod m$$
+	\end{stp}
+\end{proof}
+% \begin{proof}
+% 	The first property of the definition is a well-known result from analysis. We will focus on the second property:\\
+% 	\begin{stp}{$\forall m>0\;\exists N\geq0,p>0\;\forall n\geq N\qquad(f\circ g)(n+p) \equiv (f\circ g)(n)\mod m$}
+% 				Let $m>0$. Because $f$ is spiralling, we can find $N_f\geq0, p_f>0$ such that:
+% 		\bgroup\disobeylines
+% 		\begin{align}
+% 			\forall n\geq N_f [f(n+p_f)&\equiv f(n) \mod m] \implies \\
+% 			\forall n\geq N_f\forall k\geq0 [f(n+k*p_f)&\equiv f(n)\mod m]
+% 		\end{align}
+% 		Because $g$ is spiralling, we can find $N_g\geq0,p_g>0$ such that when $n\geq N_g$:
+% 		\begin{align*}
+% 			g(n+p_g) &\equiv g(n) \mod p_f \iff \\
+% 			\exists j\geq0 [g(n+p_g) &= g(n) + j*p_g ]
+% 		\end{align*}
+% 		Notice that we know that $j\in\N$ instead of $j\in\Z$ because $g$ is increasing.
+% 		Choose $N \geq N_g$ such that $\forall n>N [g(n) > N_f]$.
+% 		This is possible because $\lim_{n\to\infty}g(n)=\infty$.\\
+% 		Then we insert $g(n+p)$ in $(2)$, and get, for all $n\geq N$:
+% 		\begin{align*}
+% 			f(g(n+p)) = f(g(n) + j*p_g) \equiv f(g(n)) \mod m
+% 		\end{align*}
+% 		\egroup
+% 	\end{stp}
+% \end{proof}
+\end{theorem}
+
+By application of \cref{spir_func_1,cp_spir,cp_spir_comp}, we find that the following functions are spiralling.
+
+\begin{corollary}{More spiralling functions.}\label{more_spir}
+	\begin{enumerate}
+		\item $P_k\in\spir[\N]$ where $P_k$ a polynomial of order $k$ and positive coeficients.
+		\item $(n \mapsto 2^{2^n}),(n \mapsto 3^{3^{3^n}})\in\spir[\N]$
+	\end{enumerate}
+	In particular, we know that $n \mapsto n^2$ is spiralling.
+\end{corollary}
+
+\begin{example}{Non-spiralling functions.}\hfill\\
+Finding a non-spiralling function that fails on the first requirement is easy. Take, for example: $n \mapsto 37$ or $n \mapsto \floor{sin(n)}$.
+Finding a non-spiralling function that fails on the second requirement is a bit harder. For this, we must find a function $f$ such that $\lim_{n\to\infty}f(n)=\infty$ but that is not periodic modulo some $m>0$. We can take for example: 
+$$f(n) = 
+\begin{cases} 
+	2n + 1 &\mbox{if } n = k^2 \text{ for some } k>0\\
+	2n &\mbox{otherwise }
+\end{cases}
+$$
+If we consider $g := n \mapsto f(n)\mod 2$, we find: 
+$$g(n) = 
+\begin{cases} 
+	1 &\mbox{if } n = k^2 \text{ for some } k>0\\
+	0 &\mbox{otherwise }
+\end{cases}
+$$
+We can easily see that $g$ is not ultimately periodic modulo $2$.
+\end{example}
+
+\begin{lemma}\label{\fzip_spir}
+	Let $k>0$ and $f_0,f_1,...,f_{k-1}\in\spir$. Then $\fzip_k(f_0,f_1,...,f_{k-1})\in\spir$.
+	\begin{proof}
+		We have to show the two properties of \cref{def_spir}.
+		\begin{enumerate}
+			\item Choose $m\geq 0$.
+			Because for all $i<k$ we have $f_i\in\spir$, we can find $N_i\geq 0$ such that for all $n\geq N_i$ we have $f_i(n)\geq m$. Take $N := k*max(N_0,N_1,...,N_{k-1})$. Then for all $n\geq N$ we can write $n = ky + i$ for $i<k$ and $y\geq0$. We derive $\fzip_k(f_0,f_1,...,f_{k-1})(n) = \fzip_k(f_0,f_1,...,f_{k-1})(ky+i) = f_i(y) \geq m$.
+			\item Choose $m > 0$.
+			Because for all $i<k$ we have $f_i\in\spir$, we can find $N_i\geq 0,\; p_i>0$ such that for all $n\geq N_i$ we have $f_i(n+p_i) \equiv f_i(n) \mod m$. Let $N := k*max(N_0,N_1,...,N_{k-1})$ and $\tilde{p} := lcm(p_0,p_1,...,p_{k-1})$, the least common multiple. Let $kn+i \geq N$, then:
+			\begin{gather*}
+				\fzip_k(f_0,f_1,...,f_{k-1})(kn+i) = f_i(n) \equiv \\
+				f_i(n + \tilde{p}) =
+				\fzip_k(f_0,f_1,...,f_{k-1})(k(n+\tilde{p})+i) = \\
+				\fzip_k(f_0,f_1,...,f_{k-1})(kn+i+\tilde{p}k) \mod m
+			\end{gather*}
+			Thus $\fzip_k$ is periodic modulo $m$ with period $\tilde{p}k$.
+		\end{enumerate}
+	\end{proof}
+\end{lemma}
+
+% For the next sections, we need to extend the class of spiralling functions to the rational domain. 
+
+% \begin{definition}{A function $f: \N \to \Q$ is called spiralling ($f\in\spir[\Q]$) if}\label{def_spir_Q}
+% 	\begin{enumerate}
+% 		\item ($f$ has a common denominator $d$) there exists $d>0$ such that
+% 		$$d * f(n) \in\N \qquad \forall n\geq 0$$
+% 		\item Let $d$ be a common denominator of $f$. Let $\hat{f}: \N \to \N $ be defined by $\hat{f}(n) = d * f(n)$. Then $\hat{f}$ is spiralling.
+% 	\end{enumerate}
+% \end{definition}
+
+% \begin{proposition}{\cref{cp_spir} holds when $f,g\in\spir[\Q]$} and $c \in \Q$
+% \end{proposition}
+% \begin{proof}
+% 	Write $c := \frac{a}{b}$.
+% 	We need to show that $f + \frac{a}{b}$, $f*\frac{a}{b}$, $f + g$ and $f * g$ have a common denominator when $f$ and $g$ have common denominators. Let $d_f, d_g$ be common denominators for $f$ and $g$ respectivaly. We have, in the above order, common denominators $d_f*b$, $d_f*b$, $d_f*d_g$ and $d_f*d_g$
+
+% 	Because $c * f \in\spir[\N]$ when $f\in\spir[\N]$, we have that the second property of \cref{def_spir_Q} holds for the functions given in \cref{cp_spir}.
+% \end{proof}
+
+% \begin{notation}
+% 	If no confusion can arise, we will write $\spir$ for $\spir[\Q]$ and $\spir[\N]$. If will be clear from context which one we mean, although this will be mostly $\spir[\Q]$.
+% \end{notation}
